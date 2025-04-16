@@ -21,6 +21,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+
+
 // Function to capture video
 async function setupCamera() {
     const video = document.getElementById('video');
