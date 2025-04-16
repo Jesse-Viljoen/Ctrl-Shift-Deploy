@@ -59,7 +59,8 @@ document.getElementById('capture').addEventListener('click', async () => {
     const canvas = faceapi.createCanvasFromMedia(video);
     document.body.append(canvas);
     const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
-
+  
+     // size of the camera javascript code
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     faceapi.matchDimensions(canvas, { width: video.width, height: video.height });
     const resizedDetections = faceapi.resizeResults(detections, { width: video.width, height: video.height });
