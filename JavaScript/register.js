@@ -21,6 +21,8 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = firebase.storage();
+const database = firebase.database();
 
 // Sign-up function
 async function signUpUser(full_name, email,phone, password) {
@@ -59,3 +61,66 @@ app.use('/api/auth', router); // Mount the router at the '/api/auth' path
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
+
+// Function to setup camera
+async function setupCamera() {
+    const video = document.getElementById('video');
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+
+    return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+            resolve(video);
+        };
+    });
+}
+
+// Start video feed
+async function start() {
+    await setupCamera();
+}
+
+// Capture selfie and upload to Firebase
+document.getElementById('capture').addEventListener('click', async () => {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw the video frame to the canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    // Get image data URL
+    const imageDataUrl = canvas.toDataURL('image/png');
+  
+    const username = document.getElementById('username').value;
+    if (username) {
+        // Upload image to Firebase Storage
+        const fileName = `${username}_selfie.png`; // Define the storage path
+        const imageRef = storage.ref('user_images/' + fileName); // Adjust path as needed
+        await imageRef.putString(imageDataUrl, 'data_url');
+
+        // Optionally, save a reference to the user in the database with the URL of the image
+        const imageURL = await imageRef.getDownloadURL();
+
+        // Save user information along with image URL to the database
+        database.ref('users/' + username).set({
+            username: username,
+            selfieURL: imageURL
+        });
+
+        alert('Registration successful! Your selfie has been uploaded.');
+        // Optionally redirect to another page
+        // window.location.href = 'menu.html'; // Redirect to menu
+    } else {
+        alert('Please enter a username.');
+    }
+});
+
+// Call the start function to begin the video feed
+start();
+
+
