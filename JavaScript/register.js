@@ -24,6 +24,8 @@ const auth = getAuth(app);
 const storage = firebase.storage();
 const database = firebase.database();
 
+
+
 // Sign-up function
 async function signUpUser(full_name, email,phone, password) {
     try {
