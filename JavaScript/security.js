@@ -23,6 +23,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+< link src= "face_main_api.js">
+  
+  
+
 // Function to capture video
 async function setupCamera() {
     const video = document.getElementById('video');
