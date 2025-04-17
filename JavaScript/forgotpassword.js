@@ -3,7 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -28,6 +27,8 @@ function showNotification(message, isError = false) {
     notification.classList.remove('error');
     if (isError) {
         notification.classList.add('error');
+
+        
     }
     notification.style.display = 'block';
     // Hide after 5 seconds
@@ -35,7 +36,6 @@ function showNotification(message, isError = false) {
         notification.style.display = 'none';
     }, 5000);
 }
-
 // Handle forgot password form submission
 document.getElementById('resetForm').addEventListener('submit', function(event) {
     event.preventDefault();

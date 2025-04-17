@@ -121,6 +121,7 @@ document.getElementById('capture').addEventListener('click', async () => {
         database.ref('users/' + username).set({
             username: username,
             selfieURL: imageURL
+            
         });
 
         alert('Registration successful! Your selfie has been uploaded.');
@@ -128,6 +129,7 @@ document.getElementById('capture').addEventListener('click', async () => {
         // window.location.href = 'menu.html'; // Redirect to menu
     } else {
         alert('Please enter a username.');
+
     }
 });
 
