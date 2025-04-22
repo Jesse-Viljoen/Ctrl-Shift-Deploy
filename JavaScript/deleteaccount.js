@@ -1,11 +1,7 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, deleteUser } from "firebase/auth";
+import { getDatabase, ref, remove } from "firebase/database";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -17,17 +13,62 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
- document.getElementById('users').addEventListener('submit', function(event) {
-            event.preventDefault();
+// Handle account deletion logic
+document.getElementById('deleteAccountForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
 
-   
-            const email = document.getElementById('email').value;
-                    email.display('email').addEventListener('delete', function(event) {
-            event.preventDefault();
+    const email = document.getElementById('email').value; // This could be from form or session
+    const user = auth.currentUser;
+
+    if (user) {
+        const userId = user.uid;
+
+        // Check if the current user is an admin
+        const isAdmin = userId === 'adminUID';  // Replace 'adminUID' with the actual admin UID
+
+        if (isAdmin) {
+            // Admin can delete any user's account
+            const userRef = ref(db, 'users/' + email); // You can change this to identify the user you want to delete
+            remove(userRef)  // Deleting user data from the database
+                .then(() => {
+                    console.log("User data deleted successfully");
+                })
+                .catch((error) => {
+                    console.error("Error deleting user data:", error);
+                });
+
+            // Proceed to delete the user from Firebase Authentication
+            deleteUser(user)
+                .then(() => {
+                    console.log("User account deleted successfully");
+                    alert("The user account has been deleted.");
+                })
+                .catch((error) => {
+                    console.error("Error deleting user account:", error);
+                    alert("An error occurred while deleting the user account.");
+                });
+        } else if (userId === email) {
+            // Regular user can only delete their own account
+            deleteUser(user)
+                .then(() => {
+                    console.log("Your account has been deleted successfully.");
+                    alert("Your account has been deleted.");
+                })
+                .catch((error) => {
+                    console.error("Error deleting your account:", error);
+                    alert("An error occurred while deleting your account.");
+                });
+        } else {
+            alert("You do not have permission to delete this account.");
+        }
+    } else {
+        alert("No authenticated user found.");
+    }
+});
 
                     
 
