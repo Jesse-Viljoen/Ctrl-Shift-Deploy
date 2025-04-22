@@ -2,9 +2,11 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const firebaseConfig = {
-     apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",// --- Ctrl Shift Deploy, firebase configuration ---
+  apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
@@ -19,14 +21,14 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // --- Login Component (React) ---
-import React, { useState } from 'react';
-
 function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isRegistering, setIsRegistering] = useState(false);
+
+    const navigate = useNavigate(); // For redirect after login
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,6 +49,7 @@ function Login({ onLogin }) {
                 setMessage('Login Successful');
             }
             onLogin(userCredential.user);
+            navigate('/dashboard'); // Redirect after login
         } catch (error) {
             setMessage(error.message);
         } finally {
@@ -74,8 +77,18 @@ function Login({ onLogin }) {
                     disabled={isLoading}
                     required
                 />
+                
+                {/* 👇 Forgot Password link */}
+                {!isRegistering && (
+                    <p style={{ marginTop: '10px' }}>
+                        <a href="/forgot-password">Forgot Password?</a>
+                    </p>
+                )}
+
                 <button type='submit' disabled={isLoading}>
-                    {isLoading ? (isRegistering ? 'Registering...' : 'Logging in...') : (isRegistering ? 'Register' : 'Login')}
+                    {isLoading
+                        ? (isRegistering ? 'Registering...' : 'Logging in...')
+                        : (isRegistering ? 'Register' : 'Login')}
                 </button>
             </form>
             <p>{message}</p>
@@ -87,4 +100,5 @@ function Login({ onLogin }) {
 }
 
 export default Login;
+
 
