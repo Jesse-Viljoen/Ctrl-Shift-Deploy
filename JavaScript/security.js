@@ -23,6 +23,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+// The line of code below  is incorrect as the connection between two JavaScript files only can connect if you use constant name variable as an placeholder for the connection, finish creating the block of code before 25th April, Friday.
 < link src= "face_main_api.js">
   
   
