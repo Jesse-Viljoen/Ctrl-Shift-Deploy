@@ -15,7 +15,6 @@ apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -32,8 +31,7 @@ const database = firebase.database();
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
+            return hashHex; }
 
 // Sign-up function
 async function signUpUser(full_name, email,phone, password) {
