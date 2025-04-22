@@ -1,14 +1,9 @@
-:      https://raw.githubusercontent.com/karkranikhil/face-recognition-using-js/master/js/face-api.min.js
-
-
-// Import the functions you need from the SDKs you need
+// Import necessary Firebase SDK functions
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getDatabase, ref, set } from "firebase/database";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your Firebase web app's configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -23,51 +18,67 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const db = getDatabase(app);  // Firebase Realtime Database
 
+// Video element for face recognition
 const video = document.getElementById("video");
 const isScreenSmall = window.matchMedia("(max-width: 700px)");
-/****Loading the model ****/
-Promise.all([  
-faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+
+// Load FaceAPI models
+Promise.all([
+  faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
   faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-  ]).then(startVideo);
+  faceapi.nets.faceRecognitionNet.loadFromUri("/models")
+]).then(startVideo);
+
+// Start video stream
 function startVideo() {
-  navigator.getUserMedia(
-    { video: {} },
-    stream => (video.srcObject = stream),
-    err => console.error(err)
-  );
+  navigator.mediaDevices.getUserMedia({ video: {} })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => console.error("Error accessing video stream: ", err));
 }
-/****Fixing the video with based on size size  ****/
-function screenResize(isScreenSmall) {
-  if (isScreenSmall.matches) {
-    video.style.width = "320px";
-  } else {
-    video.style.width = "500px";
-  }
-}
-const video = document.getElementById("video");
-const isScreenSmall = window.matchMedia("(max-width: 700px)");
-/****Loading the model ****/
-Promise.all([  
-faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-  faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-  ]).then(startVideo);
-function startVideo() {
-  navigator.getUserMedia(
-    { video: {} },
-    stream => (video.srcObject = stream),
-    err => console.error(err)
-  );
-}
-/****Fixing the video with based on size size  ****/
-function screenResize(isScreenSmall) {
-  if (isScreenSmall.matches) {
-    video.style.width = "320px";
-  } else {
-    video.style.width = "500px";
+
+// Detect faces and save data to Firebase
+async function detectAndSaveFace() {
+  const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+
+  if (detections.length > 0) {
+    // For example, save the first detected face descriptor (you could also use other data from detections)
+    const faceDescriptor = detections[0].descriptor;
+
+    // Save face descriptor and other data to Firebase
+    const userId = "user123";  // You can replace this with actual user data
+    const userFaceDataRef = ref(db, 'faces/' + userId);  // Referring to a path like /faces/user123 in the database
+
+    set(userFaceDataRef, {
+      faceDescriptor: faceDescriptor,  // Store the face descriptor (you can store more details as needed)
+      timestamp: new Date().toISOString()  // Optionally, save the timestamp
+    }).then(() => {
+      console.log("Face data saved to Firebase");
+    }).catch(error => {
+      console.error("Error saving face data: ", error);
+    });
   }
 }
 
+// Run face detection every few seconds
+setInterval(detectAndSaveFace, 5000);  // Detect every 5 seconds (adjust as needed)
+
+// Resize video based on screen size
+function screenResize(isScreenSmall) {
+  if (isScreenSmall.matches) {
+    video.style.width = "320px";  // Small screen size
+  } else {
+    video.style.width = "500px";  // Larger screen size
+  }
+}
+
+// Event listener to adjust video size on screen resize
+isScreenSmall.addEventListener("change", function() {
+  screenResize(isScreenSmall);
+});
+
+// Initial video size adjustment on page load
+screenResize(isScreenSmall);
