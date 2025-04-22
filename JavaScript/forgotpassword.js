@@ -1,10 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"; // ✅ Import auth functions
+
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -19,6 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth(app); // ✅ Initialize auth
 
 // Show notification
 function showNotification(message, isError = false) {
@@ -27,8 +27,6 @@ function showNotification(message, isError = false) {
     notification.classList.remove('error');
     if (isError) {
         notification.classList.add('error');
-
-        
     }
     notification.style.display = 'block';
     // Hide after 5 seconds
@@ -36,20 +34,18 @@ function showNotification(message, isError = false) {
         notification.style.display = 'none';
     }, 5000);
 }
+
 // Handle forgot password form submission
 document.getElementById('resetForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
     const email = document.getElementById('email').value;
 
-    // Send password reset email using Firebase Authentication
-    auth.sendPasswordResetEmail(email)
+    sendPasswordResetEmail(auth, email)
         .then(() => {
-            // Show success notification
             showNotification("Password reset email sent! Please check your inbox.", false);
         })
         .catch((error) => {
-            // Show error notification
             showNotification("Error: " + error.message, true);
         });
 });
