@@ -20,7 +20,8 @@
       "subscription": {
         "plan": "free",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z"
+        "expiryDate": "2025-06-01T00:00:00Z",
+        "status": "pending"  
       }
     },
     "student1": {
@@ -43,7 +44,8 @@
       "subscription": {
         "plan": "free",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z"
+        "expiryDate": "2025-06-01T00:00:00Z",
+        "status": "pending"  
       }
     },
     "parent2": {
@@ -66,7 +68,8 @@
       "subscription": {
         "plan": "premium",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z"
+        "expiryDate": "2025-06-01T00:00:00Z",
+        "status": "pending"  
       }
     },
     "student2": {
@@ -89,7 +92,8 @@
       "subscription": {
         "plan": "premium",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z"
+        "expiryDate": "2025-06-01T00:00:00Z",
+        "status": "pending"  
       }
     }
   },
@@ -155,13 +159,15 @@
   "adminControls": {
     "settings": {
       "canDeleteUsers": true,
-      "canResetPasswords": true
+      "canResetPasswords": true,
+      "canAcceptSubscription": true,  
+      "canRejectSubscription": true   
     },
     "subscription": {
-      "status": "active",
-      "plan": "premium",
+      "status": "pending",  
+      "plan": "enterprise",
       "startDate": "2025-04-01T00:00:00Z",
-      "expiryDate": "2025-06-01T00:00:00Z"
+      "expiryDate": "2026-04-01T00:00:00Z"
     }
   },
   "application": {
@@ -189,3 +195,5 @@
     }
   }
 }
+
+      
