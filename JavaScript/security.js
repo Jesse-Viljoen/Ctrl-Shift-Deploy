@@ -22,7 +22,7 @@ const auth = getAuth(app);
 
 // Dynamically load face_main_api.js
 const script = document.createElement('script');
-script.src = 'path/to/face_main_api.js'; // Replace with the correct path
+script.src = 'Ctrl-Shift-Deploy/JavaScript/face_main_api.js'; // The correct path
 script.type = 'text/javascript';
 document.head.appendChild(script);
 
