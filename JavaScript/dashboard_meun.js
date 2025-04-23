@@ -61,7 +61,7 @@ iframe.height = "400";
 iframe.style.border = "0";
 iframe.allowFullscreen = true;
 iframe.loading = "lazy";
-iframe.src = `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=Googleplex,Mountain+View,CA`;
+iframe.src = `https://www.google.com/maps/embed/v1/place?key="AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY"&q=Googleplex,Mountain+View,CA`;
 
 // Build structure
 modalContent.appendChild(closeBtn);
