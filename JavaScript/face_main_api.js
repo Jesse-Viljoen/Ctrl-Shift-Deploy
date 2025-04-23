@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getDatabase, ref, set } from "firebase/database";
 
+
 // Your Firebase web app's configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
@@ -20,65 +21,75 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);  // Firebase Realtime Database
 
-// Video element for face recognition
-const video = document.getElementById("video");
-const isScreenSmall = window.matchMedia("(max-width: 700px)");
+// Wait for DOM content to be loaded before accessing elements
+window.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("video");
 
-// Load FaceAPI models
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-  faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("/models")
-]).then(startVideo);
-
-// Start video stream
-function startVideo() {
-  navigator.mediaDevices.getUserMedia({ video: {} })
-    .then(stream => {
-      video.srcObject = stream;
-    })
-    .catch(err => console.error("Error accessing video stream: ", err));
-}
-
-// Detect faces and save data to Firebase
-async function detectAndSaveFace() {
-  const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
-
-  if (detections.length > 0) {
-    // For example, save the first detected face descriptor (you could also use other data from detections)
-    const faceDescriptor = detections[0].descriptor;
-
-    // Save face descriptor and other data to Firebase
-    const userId = "user123";  // You can replace this with actual user data
-    const userFaceDataRef = ref(db, 'faces/' + userId);  // Referring to a path like /faces/user123 in the database
-
-    set(userFaceDataRef, {
-      faceDescriptor: faceDescriptor,  // Store the face descriptor (you can store more details as needed)
-      timestamp: new Date().toISOString()  // Optionally, save the timestamp
-    }).then(() => {
-      console.log("Face data saved to Firebase");
-    }).catch(error => {
-      console.error("Error saving face data: ", error);
-    });
+  if (!video) {
+    console.error("Video element not found in DOM.");
+    return;
   }
-}
 
-// Run face detection every few seconds
-setInterval(detectAndSaveFace, 5000);  // Detect every 5 seconds (adjust as needed)
+  const isScreenSmall = window.matchMedia("(max-width: 700px)");
 
-// Resize video based on screen size
-function screenResize(isScreenSmall) {
-  if (isScreenSmall.matches) {
-    video.style.width = "320px";  // Small screen size
-  } else {
-    video.style.width = "500px";  // Larger screen size
+  // Load FaceAPI models
+  Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+    faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+    faceapi.nets.faceRecognitionNet.loadFromUri("/models")
+  ])
+  .then(startVideo)
+  .catch(err => console.error("Error loading FaceAPI models: ", err));
+
+  // Start video stream
+  function startVideo() {
+    navigator.mediaDevices.getUserMedia({ video: {} })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => console.error("Error accessing video stream: ", err));
   }
-}
 
-// Event listener to adjust video size on screen resize
-isScreenSmall.addEventListener("change", function() {
+  // Detect faces and save data to Firebase
+  async function detectAndSaveFace() {
+    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+
+    if (detections.length > 0) {
+      const faceDescriptor = detections[0].descriptor;
+
+      // Serialize descriptor to Array to ensure Firebase compatibility
+      const userId = "user123";   // Replace with dynamic user ID in production
+      const userFaceDataRef = ref(db, 'faces/' + userId);
+
+      set(userFaceDataRef, {
+        faceDescriptor: Array.from(faceDescriptor),
+        timestamp: new Date().toISOString()
+      }).then(() => {
+        console.log("Face data saved to Firebase");
+      }).catch(error => {
+        console.error("Error saving face data: ", error);
+      });
+    }
+  }
+
+  // Run face detection every few seconds
+  setInterval(detectAndSaveFace, 5000);  // Detect every 5 seconds
+
+  // Resize video based on screen size
+  function screenResize(isScreenSmall) {
+    if (isScreenSmall.matches) {
+      video.style.width = "320px";
+    } else {
+      video.style.width = "500px";
+    }
+  }
+
+  // Adjust video size on screen resize
+  isScreenSmall.addEventListener("change", function() {
+    screenResize(isScreenSmall);
+  });
+
+  // Initial resize
   screenResize(isScreenSmall);
 });
 
-// Initial video size adjustment on page load
-screenResize(isScreenSmall);
