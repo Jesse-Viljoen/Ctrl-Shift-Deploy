@@ -157,6 +157,29 @@
         "canDeleteUsers": true,
         "canResetPasswords": true
       }
+    },
+    "application": {
+      "student1": {
+        "studentName": "Daniel Jacobs",
+        "school": "Claremont High",
+        "phone": "0712345678",
+        "email": "daniel.j@example.com",
+        "vehicleType": "Taxi",
+        "applicationStatus": "Pending",
+        "totalApplication": 3,
+        "totalApplicationApproval": 2,
+        "totalApplicationRejected": 1
+      },
+      "student2": {
+        "studentName": "Emily Peterson",
+        "school": "Newlands High",
+        "phone": "0729876543",
+        "email": "emily.p@example.com",
+        "vehicleType": "Bus",
+        "applicationStatus": "Approved",
+        "totalApplication": 5,
+        "totalApplicationApproval": 5,
+        "totalApplicationRejected": 0
+      }
     }
   }
-  
