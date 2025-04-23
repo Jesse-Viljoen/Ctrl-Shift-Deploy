@@ -31,11 +31,11 @@ document.getElementById('deleteAccountForm').addEventListener('submit', function
         const userId = user.uid;
 
         // Admin check logic (use Firestore or Realtime Database for more robust checking)
-        const isAdmin = userId === 'adminUID';  // Replace 'adminUID' with the actual admin UID or check against a database
+        const isAdmin = userId === 'GX8o6J3ySsOTMaXPuTosEkm51Hl1';  //userId = 'GX8o6J3ySsOTMaXPuTosEkm51Hl1' is the actual admin UID.
 
         if (isAdmin) {
             // Admin can delete any user's account
-            const userRef = ref(db, 'users/' + userId); // Use userId, not email (email might have special characters)
+            const userRef = ref(db, 'users/' + userId); // Use userId ='GX8o6J3ySsOTMaXPuTosEkm51Hl1', not email (email might have special characters)
             remove(userRef)  // Deleting user data from the database
                 .then(() => {
                     console.log("User data deleted successfully");
