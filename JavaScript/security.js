@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
+import { getAuth, sendEmailVerification } from "firebase/auth";
 
 // Firebase config
 const firebaseConfig = {
@@ -17,6 +18,43 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
+
+// Dynamically load face_main_api.js
+const script = document.createElement('script');
+script.src = 'path/to/face_main_api.js'; // Replace with the correct path
+script.type = 'text/javascript';
+document.head.appendChild(script);
+
+// Set up verification method choice
+const verifyButton = document.getElementById('verifyBtn');
+verifyButton.addEventListener('click', async () => {
+  const method = document.getElementById('verificationMethod').value;
+
+  if (method === 'email') {
+    const email = prompt("Please enter your email for verification:");
+    if (!email || !email.includes('@')) {
+      alert("Invalid email.");
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (user && user.email === email) {
+      sendEmailVerification(user)
+        .then(() => {
+          alert("Verification email sent. Please check your inbox.");
+        })
+        .catch((error) => {
+          console.error("Email verification error:", error);
+          alert("Error sending verification email.");
+        });
+    } else {
+      alert("User not authenticated or email mismatch.");
+    }
+  } else if (method === 'face') {
+    start(); // Start camera and facial recognition
+  }
+});
 
 // Camera setup
 async function setupCamera() {
@@ -43,10 +81,9 @@ async function start() {
   video.play();
 }
 
-start();
-
 // On capture click
-document.getElementById('capture').addEventListener('click', async () => {
+const captureBtn = document.getElementById('capture');
+captureBtn.addEventListener('click', async () => {
   const video = document.getElementById('video');
   const canvas = faceapi.createCanvasFromMedia(video);
   document.body.append(canvas);
@@ -70,7 +107,7 @@ document.getElementById('capture').addEventListener('click', async () => {
   }
 });
 
-// Verification
+// Facial verification
 async function verifyFace(detections, capturedImageDataUrl) {
   const userImagesRef = ref(storage, 'user_images/');
   const result = await listAll(userImagesRef);
