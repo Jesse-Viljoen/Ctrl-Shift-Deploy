@@ -1,0 +1,162 @@
+{
+    "users": {
+      "parent1": {
+        "name": "Linda Jacobs",
+        "email": "linda.j@example.com",
+        "role": "parent",
+        "location": "Rondebosch",
+        "securityVerification": {
+          "method": "facial_recognition",
+          "faceId": "face_linda123",
+          "faceImageUrl": "https://firebasestorage.googleapis.com/v0/b/your-app-id.appspot.com/o/faces%2Flinda.jpg?alt=media",
+          "verified": true,
+          "lastVerified": "2025-04-15T09:15:00Z"
+        },
+        "otpVerification": {
+          "verified": true,
+          "otpSentAt": "2025-04-14T09:00:00Z",
+          "otpVerifiedAt": "2025-04-14T09:05:00Z"
+        },
+        "subscription": {
+          "plan": "free",
+          "startDate": "2025-04-01T00:00:00Z",
+          "expiryDate": "2025-06-01T00:00:00Z"
+        }
+      },
+      "student1": {
+        "name": "Daniel Jacobs",
+        "email": "daniel.j@example.com",
+        "role": "student",
+        "location": "Claremont",
+        "securityVerification": {
+          "method": "facial_recognition",
+          "faceId": "face_daniel001",
+          "faceImageUrl": "https://firebasestorage.googleapis.com/v0/b/your-app-id.appspot.com/o/faces%2Fdaniel.jpg?alt=media",
+          "verified": true,
+          "lastVerified": "2025-04-15T07:50:00Z"
+        },
+        "otpVerification": {
+          "verified": true,
+          "otpSentAt": "2025-04-14T07:00:00Z",
+          "otpVerifiedAt": "2025-04-14T07:01:00Z"
+        },
+        "subscription": {
+          "plan": "free",
+          "startDate": "2025-04-01T00:00:00Z",
+          "expiryDate": "2025-06-01T00:00:00Z"
+        }
+      },
+      "parent2": {
+        "name": "George Peterson",
+        "email": "george.p@example.com",
+        "role": "parent",
+        "location": "Kenilworth",
+        "securityVerification": {
+          "method": "facial_recognition",
+          "faceId": "face_george321",
+          "faceImageUrl": "https://firebasestorage.googleapis.com/v0/b/your-app-id.appspot.com/o/faces%2Fgeorge.jpg?alt=media",
+          "verified": true,
+          "lastVerified": "2025-04-15T10:10:00Z"
+        },
+        "otpVerification": {
+          "verified": true,
+          "otpSentAt": "2025-04-13T11:00:00Z",
+          "otpVerifiedAt": "2025-04-13T11:03:00Z"
+        },
+        "subscription": {
+          "plan": "premium",
+          "startDate": "2025-04-01T00:00:00Z",
+          "expiryDate": "2025-06-01T00:00:00Z"
+        }
+      },
+      "student2": {
+        "name": "Emily Peterson",
+        "email": "emily.p@example.com",
+        "role": "student",
+        "location": "Newlands",
+        "securityVerification": {
+          "method": "facial_recognition",
+          "faceId": "face_emily002",
+          "faceImageUrl": "https://firebasestorage.googleapis.com/v0/b/your-app-id.appspot.com/o/faces%2Femily.jpg?alt=media",
+          "verified": true,
+          "lastVerified": "2025-04-15T08:20:00Z"
+        },
+        "otpVerification": {
+          "verified": true,
+          "otpSentAt": "2025-04-14T08:10:00Z",
+          "otpVerifiedAt": "2025-04-14T08:12:00Z"
+        },
+        "subscription": {
+          "plan": "premium",
+          "startDate": "2025-04-01T00:00:00Z",
+          "expiryDate": "2025-06-01T00:00:00Z"
+        }
+      }
+    },
+    "drivers": {
+      "driver1": {
+        "name": "Mike Smith",
+        "email": "mike@busline.com",
+        "busNumber": "BUS123",
+        "availability": true
+      }
+    },
+    "bookings": {
+      "booking1": {
+        "userId": "student1",
+        "driverId": "driver1",
+        "pickupLocation": "Claremont Train Station",
+        "dropoffLocation": "Cape Town High School",
+        "pickupTime": "07:15",
+        "contactNumber": "0712345678",
+        "status": "confirmed",
+        "timestamp": "2025-04-15T06:30:00Z"
+      },
+      "booking2": {
+        "userId": "student2",
+        "driverId": "driver1",
+        "pickupLocation": "Newlands Rugby Stadium",
+        "dropoffLocation": "Harold Cressy High School",
+        "pickupTime": "07:25",
+        "contactNumber": "0729876543",
+        "status": "confirmed",
+        "timestamp": "2025-04-15T06:45:00Z"
+      },
+      "booking3": {
+        "userId": "parent2",
+        "driverId": "driver1",
+        "childName": "Emily Peterson",
+        "pickupLocation": "20 Main Rd, Kenilworth",
+        "dropoffLocation": "Harold Cressy High",
+        "pickupTime": "07:20",
+        "contactNumber": "0839991122",
+        "status": "pending",
+        "timestamp": "2025-04-16T06:30:00Z"
+      }
+    },
+    "chats": {
+      "chat1": {
+        "userId": "student1",
+        "driverId": "driver1",
+        "messages": [
+          {
+            "sender": "student1",
+            "message": "Hi Mike, are you nearby?",
+            "timestamp": "2025-04-15T06:00:00Z"
+          },
+          {
+            "sender": "driver1",
+            "message": "Yes, arriving in 10 mins.",
+            "timestamp": "2025-04-15T06:01:00Z"
+          }
+        ]
+      }
+    },
+    "adminControls": {
+      "settings": {
+        "canDeleteUsers": true,
+        "canResetPasswords": true
+      }
+    }
+  }
+  
