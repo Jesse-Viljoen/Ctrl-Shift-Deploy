@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { getDatabase, ref as dbRef, get as dbGet } from "firebase/database";
+import { getDatabase, ref as dbRef, get as dbGet, set } from "firebase/database"; // ✅ Added set
 import { getAuth } from "firebase/auth";
 
 // ✅ Firebase configuration (with corrected storageBucket)
@@ -11,7 +11,7 @@ const firebaseConfig = {
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
-  storageBucket: "ctrl-shift-deploy.appspot.com", // ✅ Corrected
+  storageBucket: "ctrl-shift-deploy.appspot.com",
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
@@ -73,11 +73,40 @@ async function fetchUserData() {
   }
 }
 
+// ✅ Submit application to Realtime Database
+function submitApplication() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("No user is logged in.");
+    return;
+  }
+
+  const applicationData = {
+    studentName: "Daniel Jacobs",
+    school: "Claremont High",
+    phone: "0712345678",
+    email: "daniel.j@example.com",
+    vehicleType: "Minivan",
+    applicationStatus: "Pending",
+    totalApplication: 3,
+    totalApplicationApproval: 2,
+    totalApplicationRejected: 1
+  };
+
+  const applicationRef = dbRef(rtdb, 'applications/' + user.uid);
+  set(applicationRef, applicationData)
+    .then(() => {
+      alert("Application submitted successfully!");
+    })
+    .catch((error) => {
+      console.error("Error submitting application:", error);
+      alert("Failed to submit application.");
+    });
+}
+
 // ✅ Automatically run fetch on page load
 window.onload = fetchUserData;
 
-
-
-
-
-
+// ✅ Expose the submit function to global scope if using <script type="module">
+window.submitApplication = submitApplication;
