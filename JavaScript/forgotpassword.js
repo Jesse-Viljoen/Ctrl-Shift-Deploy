@@ -9,7 +9,7 @@ const firebaseConfig = {
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
-  storageBucket: "ctrl-shift-deploy.firebasestorage.app",
+  storageBucket: "ctrl-shift-deploy.appspot.com", // ✅ Corrected storage bucket URL
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
@@ -41,11 +41,24 @@ document.getElementById('resetForm').addEventListener('submit', function(event) 
 
     const email = document.getElementById('email').value;
 
+    // 2. Add email format validation
+    if (!email || !email.includes('@')) {
+        showNotification("Please enter a valid email address.", true);
+        return;
+    }
+
+    const resetButton = document.getElementById('resetButton');
+    resetButton.disabled = true; // Disable button to prevent multiple clicks
+
     sendPasswordResetEmail(auth, email)
         .then(() => {
             showNotification("Password reset email sent! Please check your inbox.", false);
         })
         .catch((error) => {
             showNotification("Error: " + error.message, true);
+        })
+        .finally(() => {
+            resetButton.disabled = false; // Re-enable the button
         });
 });
+
