@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #078881e7;
+    color: white;
+  }
+  
+  /* Navbar */
+  header.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #210a8b;
+    padding: 20px 40px;
+  }
+  
+  header.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .navbar nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: white;
+  }
+
+  .navbar nav a:hover {
+    color: #ff9800;
+    border-bottom: 2px solid #ff9800;
+  }
+  
+  .navbar .btn-register {
+    padding: 8px 16px;
+    background: rgb(231, 125, 3);
+    color: #fcfcfc;
+    border-radius: 16px;
+  }
+
+  .btn-register:hover {
+    background: rgb(51, 27, 138);
+    color: #fff;
+    transition: background 0.3s ease;
+}
+  
+  /* Hero Section */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 40px;
+  }
+  
+  .hero-text {
+    max-width: 50%;
+  }
+  
+  .hero-text h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  
+  .hero-text span {
+    color: #00f0ff;
+  }
+  
+  .hero-text p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .btn-login {
+    padding: 12px 24px;
+    font-size: 16px;
+    background: rgb(230, 113, 3);
+    border: none;
+    border-radius: 16px;
+    color: #fcfcfc;
+    text-decoration: none;
+  }
+
+ .btn-login:hover {
+        background: rgb(10, 135, 139);
+        color: #fff;
+        transition: background 0.3s ease;
+    }
+
+    .social-icons {
+        margin-top: 20px;
+      }
+      
+      .social-icons a {
+        margin: 0 10px;
+        color: #e4eef1;
+        font-size: 20px;
+        transition: color 0.3s ease;
+      }
+      
+      .social-icons a:hover {
+        color: #ff9800;
+      }
+      
+  
+  .hero-img img {
+    width: 400px;
+    max-width: 100%;
+  }
