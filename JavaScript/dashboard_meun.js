@@ -18,6 +18,26 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+// Helper to update a single field in real-time
+const updateSubscriptionField = (field, value) => {
+  const updates = {};
+  updates[`admincontrol/subscription/${field}`] = value;
+  update(ref(db), updates);
+};
+
+// Attach listeners to inputs
+const setupLiveSubscriptionListeners = () => {
+  const fields = ['plan', 'status', 'startDate', 'endDate'];
+  fields.forEach(field => {
+    const input = document.getElementById(field);
+    input.addEventListener('input', () => {
+      updateSubscriptionField(field, input.value);
+    });
+  });
+};
+
+// Call setup once DOM is ready
+document.addEventListener('DOMContentLoaded', setupLiveSubscriptionListeners);
 
 // javascript for location button 
 const modal = document.createElement("div");
