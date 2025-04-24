@@ -21,4 +21,32 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+// Live update driver field
+function liveUpdateDriver(driverId, field, value) {
+  const updates = {};
+  updates[`drivers/${driverId}/${field}`] = value;
+  update(ref(db), updates);
+}
+
+function liveUpdateUser(userId, field, value) {
+  const updates = {};
+  updates[`users/${userId}/${field}`] = value;
+  update(ref(db), updates);
+}
+
+function getWhatsAppLink(phoneNumber, message) {
+  const encoded = encodeURIComponent(message);
+  return `https://wa.me/${00628859061111}?text=${encoded}`;
+}
+
+// Example
+const waLink = getWhatsAppLink("00628859061111", "Hi! I'm contacting you from our transport app.");
+
+// add the live saving rides
+
+
+rides.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+console.log("Sorted (Newest to Oldest):", rides);
+
 
