@@ -18,7 +18,7 @@
         "otpVerifiedAt": "2025-04-14T09:05:00Z"
       },
       "subscription": {
-        "plan": "free",
+        "plan": "Taxi",
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z",
         "status": "pending"  
@@ -42,7 +42,7 @@
         "otpVerifiedAt": "2025-04-14T07:01:00Z"
       },
       "subscription": {
-        "plan": "free",
+        "plan": "Taxi",
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z",
         "status": "pending"  
@@ -66,7 +66,7 @@
         "otpVerifiedAt": "2025-04-13T11:03:00Z"
       },
       "subscription": {
-        "plan": "premium",
+        "plan": "Bus",
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z",
         "status": "pending"  
@@ -90,7 +90,7 @@
         "otpVerifiedAt": "2025-04-14T08:12:00Z"
       },
       "subscription": {
-        "plan": "premium",
+        "plan": "Bus",
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z",
         "status": "pending"  
