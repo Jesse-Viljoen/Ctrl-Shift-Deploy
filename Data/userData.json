@@ -19,9 +19,9 @@
       },
       "subscription": {
         "plan": "Taxi",
+        "status": "pending",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z",
-        "status": "pending"  
+        "expiryDate": "2025-06-01T00:00:00Z"
       }
     },
     "student1": {
@@ -40,12 +40,6 @@
         "verified": true,
         "otpSentAt": "2025-04-14T07:00:00Z",
         "otpVerifiedAt": "2025-04-14T07:01:00Z"
-      },
-      "subscription": {
-        "plan": "Taxi",
-        "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z",
-        "status": "pending"  
       }
     },
     "parent2": {
@@ -67,9 +61,9 @@
       },
       "subscription": {
         "plan": "Bus",
+        "status": "pending",
         "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z",
-        "status": "pending"  
+        "expiryDate": "2025-06-01T00:00:00Z"
       }
     },
     "student2": {
@@ -88,20 +82,20 @@
         "verified": true,
         "otpSentAt": "2025-04-14T08:10:00Z",
         "otpVerifiedAt": "2025-04-14T08:12:00Z"
-      },
-      "subscription": {
-        "plan": "Bus",
-        "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-06-01T00:00:00Z",
-        "status": "pending"  
       }
     }
   },
   "drivers": {
     "driver1": {
       "name": "Mike Smith",
-      "email": "mike@busline.com",
-      "busNumber": "BUS123",
+      "email": "mike@taxiline.com",
+      "vehicleType": "Taxi",
+      "availability": true
+    },
+    "driver2": {
+      "name": "Sarah Lee",
+      "email": "sarah@busline.com",
+      "vehicleType": "Bus",
       "availability": true
     }
   },
@@ -118,7 +112,7 @@
     },
     "booking2": {
       "userId": "student2",
-      "driverId": "driver1",
+      "driverId": "driver2",
       "pickupLocation": "Newlands Rugby Stadium",
       "dropoffLocation": "Harold Cressy High School",
       "pickupTime": "07:25",
@@ -128,7 +122,7 @@
     },
     "booking3": {
       "userId": "parent2",
-      "driverId": "driver1",
+      "driverId": "driver2",
       "childName": "Emily Peterson",
       "pickupLocation": "20 Main Rd, Kenilworth",
       "dropoffLocation": "Harold Cressy High",
@@ -138,36 +132,12 @@
       "timestamp": "2025-04-16T06:30:00Z"
     }
   },
-  "chats": {
-    "chat1": {
-      "userId": "student1",
-      "driverId": "driver1",
-      "messages": [
-        {
-          "sender": "student1",
-          "message": "Hi Mike, are you nearby?",
-          "timestamp": "2025-04-15T06:00:00Z"
-        },
-        {
-          "sender": "driver1",
-          "message": "Yes, arriving in 10 mins.",
-          "timestamp": "2025-04-15T06:01:00Z"
-        }
-      ]
-    }
-  },
   "adminControls": {
     "settings": {
       "canDeleteUsers": true,
       "canResetPasswords": true,
-      "canAcceptSubscription": true,  
-      "canRejectSubscription": true   
-    },
-    "subscription": {
-      "status": "pending",  
-      "plan": "enterprise",
-      "startDate": "2025-04-01T00:00:00Z",
-      "expiryDate": "2026-04-01T00:00:00Z"
+      "canAcceptSubscription": true,
+      "canRejectSubscription": true
     }
   },
   "application": {
@@ -195,5 +165,3 @@
     }
   }
 }
-
-      
