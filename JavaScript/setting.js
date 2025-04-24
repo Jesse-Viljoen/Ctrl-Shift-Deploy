@@ -56,3 +56,37 @@ window.confirmSubscription = async function () {
   alert(`Subscribed to ${selectedPlan} plan successfully!`);
   closePopup();
 };
+
+// === ACCOUNT DELETION ===
+document.getElementById('deleteAccountForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  const email = document.getElementById('email').value;
+  const user = auth.currentUser;
+
+  if (user) {
+    const userId = user.uid;
+    const isAdmin = userId === 'GX8o6J3ySsOTMaXPuTosEkm51Hl1';
+
+    if (isAdmin) {
+      remove(ref(db, `users/${userId}`))
+        .then(() => deleteUser(user))
+        .then(() => alert("The admin account has been deleted."))
+        .catch((error) => {
+          console.error("Error deleting admin account:", error);
+          alert("Failed to delete admin account.");
+        });
+    } else if (user.email === email) {
+      remove(ref(db, `users/${userId}`))
+        .then(() => deleteUser(user))
+        .then(() => alert("Your account has been deleted."))
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while deleting your account.");
+        });
+    } else {
+      alert("You do not have permission to delete this account.");
+    }
+  } else {
+    alert("No authenticated user found.");
+  }
+});
