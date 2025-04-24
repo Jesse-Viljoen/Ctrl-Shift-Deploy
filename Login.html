@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In | RideToClass</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+  <style>
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('images/Sign_In.png') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #fff;
+  }
+  
+  .signin-container {
+      max-width: 400px;
+      min-height: 400px;
+      margin: 60px auto;
+      padding: 30px;
+      background: linear-gradient(to right, #012424, #218171);
+      border-radius: 12px;
+      box-shadow: 0 0 40px 10px rgba(14, 131, 199, 0.1);
+      text-align: center;  
+     }
+  
+  .signin-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .signin-form input {
+    width: 70%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 3px solid;
+      border-color: #eeebeb;
+      background: linear-gradient(to right, #025555, #030247);
+      color: #eeebeb;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 16px;
+  }
+
+  .signin-form input::placeholder {
+    color: #eeebeb;
+  }
+  
+  .signin-form button {
+    width: 75%;
+      padding: 12px;
+      background-color: rgb(230,113, 3);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+  }
+  
+  .signin-form button:hover {
+    background-color: #014242;
+  }
+  
+  .register-link {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    
+    .register-link a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+      color: #032a3a;
+    }
+
+  </style>
+
+</head>
+<body>
+  <div class="signin-container">
+    <h2><i class="fas fa-user-circle"></i> Sign In</h2>
+    <form class="signin-form" onsubmit="return validateLogin()">
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <button type="submit">Sign In</button>
+    </form>
+    <p class="register-link">Don't have an account? <a href="register.html">Register</a></p>
+  </div>
+
+  <script>
+    function validateLogin() {
+      const email = document.querySelector('.signin-form input[type="email"]').value;
+      const password = document.querySelector('.signin-form input[type="password"]').value;
+
+      if (email === "" || password === "") {
+        alert("Please fill in all fields.");
+        return false;
+      }
+
+      alert("Login successful!"); 
+      return false; 
+    }
+  </script>
+</body>
+</html>
 
