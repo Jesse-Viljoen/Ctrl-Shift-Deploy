@@ -20,6 +20,8 @@
       "subscription": {
         "plan": "Taxi",
         "status": "pending",
+        "paymentStatus": "unpaid",
+        "confirmation": false,
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z"
       }
@@ -62,6 +64,8 @@
       "subscription": {
         "plan": "Bus",
         "status": "pending",
+        "paymentStatus": "unpaid",
+        "confirmation": false,
         "startDate": "2025-04-01T00:00:00Z",
         "expiryDate": "2025-06-01T00:00:00Z"
       }
