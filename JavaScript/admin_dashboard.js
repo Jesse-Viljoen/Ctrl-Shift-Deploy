@@ -84,3 +84,50 @@ function fetchApplicationStats() {
       alert("Failed to load stats.");
     });
 }
+// --- DOM Elements ---
+const scheduleRoutesBtn = document.getElementById("scheduleRoutesBtn");
+const popupModal = document.getElementById("popupModal");
+const fileInput = document.getElementById("fileInput");
+const uploadBtn = document.getElementById("uploadBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+
+// --- Show Popup Modal ---
+scheduleRoutesBtn.addEventListener("click", () => {
+  popupModal.classList.remove("hidden");
+});
+
+// --- Hide Popup Modal ---
+cancelBtn.addEventListener("click", () => {
+  popupModal.classList.add("hidden");
+  fileInput.value = "";
+});
+
+// --- Upload File to Firebase ---
+uploadBtn.addEventListener("click", () => {
+  const file = fileInput.files[0];
+  if (!file) return alert("Please select a file first!");
+
+  const filePath = `schedules/${Date.now()}_${file.name}`;
+  const fileRef = storageRef(storage, filePath);
+
+  uploadBytes(fileRef, file)
+    .then(snapshot => getDownloadURL(snapshot.ref))
+    .then(downloadURL => {
+      const scheduleEntry = {
+        name: file.name,
+        url: downloadURL,
+        timestamp: new Date().toISOString()
+      };
+
+      const entryRef = push(dbRef(database, "schedules"));
+      return set(entryRef, scheduleEntry);
+    })
+    .then(() => {
+      alert("File uploaded and saved to schedule!");
+      popupModal.classList.add("hidden");
+      fileInput.value = "";
+    })
+    .catch(err => {
+      alert("Error uploading file: " + err.message);
+    });
+});
