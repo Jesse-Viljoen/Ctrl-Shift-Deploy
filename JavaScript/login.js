@@ -5,12 +5,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { initializeApp } from "firebase/app";
 
-// --- Firebase Configuration ---
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -27,11 +26,12 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 function Login({ onLogin }) {
+  const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -43,18 +43,23 @@ function Login({ onLogin }) {
 
     try {
       if (isRegistering) {
+        if (password !== confirmPassword) {
+          setMessage("Passwords do not match.");
+          return;
+        }
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", userCredential.user.uid), {
           name: email.split('@')[0],
           email: email,
         });
         await sendEmailVerification(userCredential.user);
-        setMessage("Registration successful! Please check your email to verify your account.");
+        setMessage("Registration successful! Please verify your email.");
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        
+
         if (!userCredential.user.emailVerified) {
-          setMessage("Email not verified. Please check your inbox.");
+          setMessage("Email not verified. Check your inbox.");
           return;
         }
 
@@ -73,78 +78,105 @@ function Login({ onLogin }) {
     e.preventDefault();
     setMessage('');
     if (!email) {
-      setMessage("Please enter your email address to reset password.");
+      setMessage("Please enter your email address.");
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setMessage("Password reset email sent. Check your inbox.");
+      setMessage("Password reset email sent.");
     } catch (error) {
       setMessage(error.message);
     }
   };
 
   return (
-    <div>
-      <h2>{isRegistering ? "Register" : "Login"}</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          disabled={isLoading}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          disabled={isLoading}
-          required
-        />
+    <div className="login-page">
+      <div className="background-image" />
+      <div className="overlay" />
 
-        {/* Optional reCAPTCHA (manual setup required) */}
-        {/* <div className="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div> */}
+      <div className="login-container">
+        <h2>Welcome to Ride TO Class</h2>
+        <p>School Transport Made Easy</p>
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading
-            ? (isRegistering ? "Registering..." : "Logging in...")
-            : (isRegistering ? "Register" : "Login")}
-        </button>
-      </form>
-
-      {!isRegistering && (
-        <p style={{ marginTop: '10px' }}>
-          <button onClick={() => setShowForgotPassword(!showForgotPassword)} style={{ border: 'none', background: 'none', color: 'blue', cursor: 'pointer' }}> // here is some CSS for the register button
-            Forgot Password?
+        <div className="form-toggle">
+          <button
+            className={!isRegistering ? 'active' : ''}
+            onClick={() => { setIsRegistering(false); setMessage(''); }}
+          >
+            Login
           </button>
-        </p>
-      )}
+          <button
+            className={isRegistering ? 'active' : ''}
+            onClick={() => { setIsRegistering(true); setMessage(''); }}
+          >
+            Register
+          </button>
+        </div>
 
-      {showForgotPassword && (
-        <form onSubmit={handleForgotPassword}>
+        <form onSubmit={handleSubmit} className="auth-form">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Email address"
             value={email}
             onChange={e => setEmail(e.target.value)}
             disabled={isLoading}
             required
           />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+          {isRegistering && (
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          )}
           <button type="submit" disabled={isLoading}>
-            Send Reset Link
+            {isLoading
+              ? (isRegistering ? "Registering..." : "Logging in...")
+              : (isRegistering ? "Register" : "Login")}
           </button>
         </form>
-      )}
 
-      <p>{message}</p>
+        {!isRegistering && (
+          <div className="register-link">
+            <button
+              onClick={() => setShowForgotPassword(!showForgotPassword)}
+              style={{ border: 'none', background: 'none', color: 'blue', cursor: 'pointer' }}
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
 
-      <button onClick={() => setIsRegistering(!isRegistering)}>
-        {isRegistering ? "Login Instead" : "Register Instead"}
-      </button>
+        {showForgotPassword && (
+          <form onSubmit={handleForgotPassword}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+            <button type="submit" disabled={isLoading}>
+              Send Reset Link
+            </button>
+          </form>
+        )}
+
+        {message && <p>{message}</p>}
+      </div>
     </div>
   );
 }

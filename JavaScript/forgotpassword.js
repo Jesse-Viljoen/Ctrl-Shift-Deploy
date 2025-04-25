@@ -1,15 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth"; // ✅ Import auth functions
+// Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-// Your web app's Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
-  storageBucket: "ctrl-shift-deploy.appspot.com", // ✅ Corrected storage bucket URL
+  storageBucket: "ctrl-shift-deploy.appspot.com",
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
@@ -18,47 +18,41 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth = getAuth(app); // ✅ Initialize auth
+const auth = getAuth(app);
 
-// Show notification
+// Notification helper
 function showNotification(message, isError = false) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.classList.remove('error');
-    if (isError) {
-        notification.classList.add('error');
-    }
-    notification.style.display = 'block';
-    // Hide after 5 seconds
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 5000);
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+  notification.className = isError ? "error" : "success";
+  notification.style.display = "block";
+
+  setTimeout(() => {
+    notification.style.display = "none";
+  }, 5000);
 }
 
-// Handle forgot password form submission
-document.getElementById('resetForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+// Handle password reset
+document.getElementById("resetPasswordForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    const email = document.getElementById('email').value;
+  const email = document.getElementById("email").value.trim();
+  const resetButton = document.getElementById("resetButton");
 
-    // 2. Add email format validation
-    if (!email || !email.includes('@')) {
-        showNotification("Please enter a valid email address.", true);
-        return;
-    }
+  if (!email || !email.includes('@')) {
+    showNotification("Please enter a valid email address.", true);
+    return;
+  }
 
-    const resetButton = document.getElementById('resetButton');
-    resetButton.disabled = true; // Disable button to prevent multiple clicks
+  resetButton.disabled = true;
 
-    sendPasswordResetEmail(auth, email)
-        .then(() => {
-            showNotification("Password reset email sent! Please check your inbox.", false);
-        })
-        .catch((error) => {
-            showNotification("Error: " + error.message, true);
-        })
-        .finally(() => {
-            resetButton.disabled = false; // Re-enable the button
-        });
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showNotification("Password reset email sent! Please check your inbox.");
+  } catch (error) {
+    console.error("Password reset error:", error);
+    showNotification("Error: " + error.message, true);
+  } finally {
+    resetButton.disabled = false;
+  }
 });
-
