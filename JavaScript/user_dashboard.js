@@ -67,7 +67,39 @@ function deleteAccount() {
 
 // View/Update/Transport/Logout placeholders
 function goToRegisterInfo() {
-  window.location.href = "user_tracking.html";
+// Handle form submission
+document.getElementById("userForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const role = document.getElementById("role").value;
+  const childName = document.getElementById("childName").value;
+  const subscription = document.getElementById("subscription").value;
+  const pickupTime = document.getElementById("pickupTime").value;
+  const location = document.getElementById("location").value;
+  const destination = document.getElementById("destination").value;
+
+  // Create a new user entry with a unique ID
+  const newUserRef = push(ref(database, "users"));
+
+  set(newUserRef, {
+    name,
+    role,
+    childName,
+    subscription,
+    pickupTime,
+    location,
+    destination
+  })
+    .then(() => {
+      alert("Data saved successfully!");
+      document.getElementById("userForm").reset();
+    })
+    .catch((error) => {
+      console.error("Error saving data:", error);
+    });
+});
+
 }
 
 function viewSubscription() {
