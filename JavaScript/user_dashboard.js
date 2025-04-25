@@ -66,21 +66,19 @@ function deleteAccount() {
 }
 
 // View/Update/Transport/Logout placeholders
+function goToRegisterInfo() {
+  window.location.href = "user_tracking.html";
+}
+
 function viewSubscription() {
-  alert("View subscription clicked.");
+  window.location.href = "ride_info.html";
 }
 
 function updateInformation() {
-  alert("Update info clicked.");
+  window.location.href = "account_management.html";
 }
 
 function showTransportInfo() {
-  alert("Transportation info shown.");
-}
-
-function logout() {
-  auth.signOut().then(() => {
-    window.location.href = "login.html";
-  });
+  window.location.href = "transport-info.html";
 }
 
