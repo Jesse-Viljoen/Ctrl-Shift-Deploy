@@ -1,8 +1,8 @@
 // Import necessary Firebase SDK functions
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getDatabase, ref, set } from "firebase/database";
-
+import { getDatabase, ref, set, get } from "firebase/database";
+import { getStorage, ref as storageRef, listAll, getDownloadURL } from "firebase/storage";
 
 // Your Firebase web app's configuration
 const firebaseConfig = {
@@ -20,6 +20,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);  // Firebase Realtime Database
+const storage = getStorage(app);  // Firebase Storage
+
+// Dynamically load face-api.min.js (loaded only once)
+const script = document.createElement('script');
+script.src = 'path/to/face-api.min.js'; // Path to face-api.min.js
+script.type = 'text/javascript';
+document.head.appendChild(script);
 
 // Wait for DOM content to be loaded before accessing elements
 window.addEventListener("DOMContentLoaded", () => {
@@ -33,13 +40,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const isScreenSmall = window.matchMedia("(max-width: 700px)");
 
   // Load FaceAPI models
-  Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-    faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-    faceapi.nets.faceRecognitionNet.loadFromUri("/models")
-  ])
-  .then(startVideo)
-  .catch(err => console.error("Error loading FaceAPI models: ", err));
+  script.onload = () => {
+    loadModels().then(startVideo).catch(err => console.error("Error loading FaceAPI models: ", err));
+  };
 
   // Start video stream
   function startVideo() {
@@ -48,6 +51,15 @@ window.addEventListener("DOMContentLoaded", () => {
         video.srcObject = stream;
       })
       .catch(err => console.error("Error accessing video stream: ", err));
+  }
+
+  // Load the models in face-api.js
+  async function loadModels() {
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+    ]);
   }
 
   // Detect faces and save data to Firebase
@@ -75,6 +87,31 @@ window.addEventListener("DOMContentLoaded", () => {
   // Run face detection every few seconds
   setInterval(detectAndSaveFace, 5000);  // Detect every 5 seconds
 
+  // Compare the captured face with known faces stored in Firebase
+  async function verifyFace(capturedImageDataUrl) {
+    const capturedImage = await faceapi.fetchImage(capturedImageDataUrl);
+    const capturedDescriptor = await faceapi.detectSingleFace(capturedImage).withFaceLandmarks().withFaceDescriptor();
+    
+    const userImagesRef = storageRef(storage, 'user_images/');
+    const result = await listAll(userImagesRef);
+    const urls = await Promise.all(result.items.map(item => getDownloadURL(item)));
+
+    const descriptors = [];
+    for (const url of urls) {
+      const img = await faceapi.fetchImage(url);
+      const description = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+      if (description) descriptors.push(description.descriptor);
+    }
+
+    const distances = descriptors.map(d => faceapi.euclideanDistance(capturedDescriptor.descriptor, d));
+    
+    if (distances.some(d => d < 0.6)) {
+      window.location.href = 'User_Dashboard.html'; // Face match found, redirect to the User_Dashboard page
+    } else {
+      alert("No match found.");
+    }
+  }
+
   // Resize video based on screen size
   function screenResize(isScreenSmall) {
     if (isScreenSmall.matches) {
@@ -92,4 +129,3 @@ window.addEventListener("DOMContentLoaded", () => {
   // Initial resize
   screenResize(isScreenSmall);
 });
-
