@@ -31,6 +31,13 @@ const verifyButton = document.getElementById('verifyBtn');
 verifyButton.addEventListener('click', async () => {
   const method = document.getElementById('verificationMethod').value;
 
+  // 1. Email Verification
+  // Triggered when: if (method === 'email') { ... }
+  // Behavior:
+  // - Prompts user for email.
+  // - Verifies it against the currently logged-in Firebase user.
+  // - Sends an email verification using sendEmailVerification.
+  // ✅ This satisfies the "Email Verification" part.
   if (method === 'email') {
     const email = prompt("Please enter your email for verification:");
     if (!email || !email.includes('@')) {
@@ -51,6 +58,15 @@ verifyButton.addEventListener('click', async () => {
     } else {
       alert("User not authenticated or email mismatch.");
     }
+
+  // 2. Face Recognition
+  // Triggered when: else if (method === 'face') { start(); }
+  // Behavior:
+  // - Loads face-api.js models.
+  // - Starts camera stream.
+  // - Captures a frame on button click (#capture).
+  // - Matches captured face against known faces from Firebase Storage.
+  // - If a match (distance < 0.6), redirects to menu.html.
   } else if (method === 'face') {
     start(); // Start camera and facial recognition
   }
@@ -127,7 +143,7 @@ async function verifyFace(detections, capturedImageDataUrl) {
   const distances = descriptors.map(d => faceapi.euclideanDistance(capturedDescriptor.descriptor, d));
 
   if (distances.some(d => d < 0.6)) {
-    window.location.href = 'menu.html';
+    window.location.href = 'User_Dashboard.html';
   } else {
     alert("No match found.");
   }
