@@ -1,1 +1,86 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, get, remove } from "firebase/database";
+import { getAuth, onAuthStateChanged, deleteUser } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
+  authDomain: "ctrl-shift-deploy.firebaseapp.com",
+  databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "ctrl-shift-deploy",
+  storageBucket: "ctrl-shift-deploy.appspot.com",
+  messagingSenderId: "1008311150868",
+  appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
+  measurementId: "G-HXZWM4BW31"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const auth = getAuth(app);
+
+// Detect current user
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const userId = user.uid;
+    const userRef = ref(database, 'users/' + userId);
+
+    get(userRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        document.getElementById("profile-photo").src = data.imageUrl || "default.jpg";
+        document.getElementById("name").textContent = data.name;
+        document.getElementById("surname").textContent = data.surname;
+        document.getElementById("email").textContent = data.email;
+        document.getElementById("phone").textContent = data.phone;
+        document.getElementById("username").textContent = data.username;
+
+        // Tracking
+        document.getElementById("driver-distance").textContent = "Driver distance: " + (data.driverDistance || "unknown");
+
+        // WhatsApp Link
+        if (data.driverPhone) {
+          const whatsappURL = `https://wa.me/${data.driverPhone}`;
+          document.getElementById("whatsapp-link").href = whatsappURL;
+        }
+      }
+    });
+  }
+});
+
+// Delete account function
+function deleteAccount() {
+  const user = auth.currentUser;
+  if (user) {
+    const userRef = ref(database, 'users/' + user.uid);
+    remove(userRef)
+      .then(() => {
+        return deleteUser(user);
+      })
+      .then(() => {
+        alert("Account deleted successfully.");
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Error deleting account:", error);
+      });
+  }
+}
+
+// View/Update/Transport/Logout placeholders
+function viewSubscription() {
+  alert("View subscription clicked.");
+}
+
+function updateInformation() {
+  alert("Update info clicked.");
+}
+
+function showTransportInfo() {
+  alert("Transportation info shown.");
+}
+
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
+}
 
