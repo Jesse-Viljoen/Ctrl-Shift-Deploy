@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transport Registration</title>
+  <link rel="stylesheet" href="RegistrationPage.css" />
+  <link rel="stylesheet" href="navigations.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f6f6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .signup-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #1a73e8;
+      color: white;
+    }
+
+    .logo-image {
+      height: 50px;
+    }
+
+    .login-button {
+      background-color: white;
+      color: #1a73e8;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .auth-container {
+      width: 90%;
+      max-width: 700px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .field {
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #555;
+    }
+
+    input, select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #1a73e8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .submit-button:hover {
+      background-color: #155fc1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1a73e8;
+      color: white;
+      font-size: 14px;
+    }
+
+    /* Responsive for Mobile */
+    @media (max-width: 600px) {
+      .field {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="signup-page">
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="logo">
+        <img src="Ride.png" alt="Ride To Class Logo" class="logo-image" />
+      </div>
+      <a href="login.html" class="login-button navigate" data-target="login.html">Login</a>
+    </header>
+
+    <!-- Registration Form Container -->
+    <div class="auth-container">
+      <h2>Transport Registration</h2>
+      <form>
+        <div class="form-group">
+          <div class="field">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required />
+          </div>
+          <div class="field">
+            <label for="role">Role *</label>
+            <select id="role" required>
+              <option value="">Select role</option>
+              <option value="parent">Parent</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="contact">Contact Number *</label>
+            <input type="tel" id="contact" placeholder="Enter contact number" required />
+          </div>
+          <div class="field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="address">Home Address / Pickup Location *</label>
+            <input type="text" id="address" placeholder="Enter your address" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="dropoff">Drop-off Location *</label>
+            <input type="text" id="dropoff" placeholder="Enter drop-off location" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="pickupTime">Pickup Time *</label>
+            <input type="time" id="pickupTime" required />
+          </div>
+          <div class="field">
+            <label for="returnTime">Return Time *</label>
+            <input type="time" id="returnTime" required />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Registration</button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Ride TO Class Project. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="firebase.js"></script>
+  <script type="module" src="RegistrationPage.js"></script>
+</body>
+</html>

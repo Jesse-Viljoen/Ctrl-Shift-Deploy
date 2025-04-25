@@ -3,42 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ride to Class</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <title>Ride TO Class Project</title>
+    <link rel="stylesheet" href="landingpage.css">
+    <link rel="stylesheet" href="navigations.css">
+    <script defer src="script.js"></script>
 </head>
-
 <body>
-    <header class="navbar">
-        <div class="logo">RideToClass</div>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#support">Support</a>
-            <a href="register.html" class="btn-register">Register</a>
-        </nav>
-    </header>
+    <div class="landing-page">
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="logo">
+                <img src="Ride.png" alt="Ride TO Class Logo">
+            </div>
+            <button class="login-button" onclick="navigateTo('login.html')">Login</button>
+        </header>
 
-    <section class="hero">
-        <div class="hero-text">
-            <h1>WELCOME TO <span>RIDE-TO-CLASS</span></h1>
+        <!-- Hero Section --> 
+        <section class="hero">
+            <h1>Ride TO Class </h1>
+            <p>A reliable school transport solution for students.</p>
+            <div class="hero-buttons">
+                <button class="cta-button" onclick="navigateTo('RegistrationPage.html')">Let's Begin</button>
+            </div>
+        </section>
+        
+        <!-- Features Grid -->
+        <main>
+            <section class="grid">
+                <div class="card">
+                    <h2>Smart Route Planning</h2>
+                    <p>Find the safest and shortest rides to school from home.</p>
+                </div>
+                <div class="card">
+                    <h2>Admin Dashboard</h2>
+                    <p>Effortless communication and route tracking for parents and drivers.</p>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2025 Ride TO Class Project. All rights reserved.</p>
+        </footer>
+    </div>
 
-            <p>RideToClass is your reliable transport service for students. RideToClass is not just a transport service; it's a community. We believe in building connections and making your journey enjoyable.  Our drivers are trained professionals who prioritize your safety and comfort. Subscribe to affordable taxi or bus plans and get to class safely and on time. We are committed to providing you with the best transport experience.</p>
-            <p>Join us today and experience the convenience of RideToClass. </p>
-
-            <a href="login.html" class="btn-login">Login</a>
-
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-              </div>
-        </div>
-
-        <div class="hero-image">
-            <img src="images/index.png" alt="Ride to Class Bus" class="bus-image">
-        </div>
-    </section>
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
 </body>
+<video autoplay muted loop class="background-video">
+    <source src="cutter.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div> <!-- Optional: to darken the video for readability -->
+  
 </html>
 
