@@ -1,3 +1,7 @@
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getDatabase, ref, set, get, push } from "firebase/database";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Firebase config
 const firebaseConfig = {
@@ -11,195 +15,109 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-// Firebase database initialization
-firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const auth = firebase.auth();
-    const database = firebase.database();
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const database = getDatabase();
+const storage = getStorage(app);
 
-// Submit application
-function submitApplication() {
-  const studentName = document.getElementById("studentName").value;
-  const school = document.getElementById("school").value;
-  const phone = document.getElementById("phone").value;
-  const email = document.getElementById("email").value;
-  const vehicleType = document.getElementById("vehicleType").value;
-  const applicationStatus = document.getElementById("applicationStatus").value;
-
-  if (!studentName || !email) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  const uniqueId = email.replace(/[.@]/g, "_");
-
-  set(ref(database, 'applications/' + uniqueId), {
-    studentName,
-    school,
-    phone,
-    email,
-    vehicleType,
-    applicationStatus,
-    totalApplications: 1,
-    totalApplicationsApproved: applicationStatus === "approved" ? 1 : 0,
-    totalApplicationsRejected: applicationStatus === "rejected" ? 1 : 0
-  })
-  .then(() => {
-    alert("Application submitted!");
-  })
-  .catch((error) => {
-    console.error("Database error:", error);
-    alert("Failed to save application.");
-  });
+// Get Firebase-compatible key from email
+function getStudentKey(row) {
+    const email = row.querySelector("td:nth-child(4)").textContent.trim();
+    return email.replace(/[.@]/g, "_");
 }
 
-// Fetch application stats
-function fetchApplicationStats() {
-  const appsRef = ref(database, 'applications');
+// Update status in Firebase
+function updateStudentStatus(studentKey, newStatus, row) {
+    const statusPath = `applications/${studentKey}/status`;
 
-  get(appsRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        let total = 0, approved = 0, rejected = 0;
+    update(ref(database), {
+        [statusPath]: newStatus
+    }).then(() => {
+        console.log(`Status updated for ${studentKey}: ${newStatus}`);
 
-        for (const id in data) {
-          const app = data[id];
-          total += 1;
-          if (app.applicationStatus === 'approved') approved += 1;
-          else if (app.applicationStatus === 'rejected') rejected += 1;
+        const badge = row.querySelector(".status-badge");
+        badge.textContent = newStatus;
+        badge.classList.remove("status-approved", "status-rejected", "status-pending");
+        badge.classList.add(`status-${newStatus.toLowerCase()}`);
+    }).catch(error => {
+        console.error("Database update failed:", error);
+    });
+}
+
+// Attach approve/reject logic
+function attachActionListeners() {
+    const approveButtons = document.querySelectorAll(".action-approve");
+    const rejectButtons = document.querySelectorAll(".action-reject");
+
+    approveButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const row = btn.closest("tr");
+            const studentKey = getStudentKey(row);
+            updateStudentStatus(studentKey, "Approved", row);
+        });
+    });
+
+    rejectButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const row = btn.closest("tr");
+            const studentKey = getStudentKey(row);
+            updateStudentStatus(studentKey, "Rejected", row);
+        });
+    });
+}
+
+// Load and render applications
+function loadApplications() {
+    const dbRef = ref(database);
+    get(child(dbRef, "applications")).then(snapshot => {
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const tbody = document.querySelector(".applications-table tbody");
+            tbody.innerHTML = "";
+
+            let total = 0, approved = 0, rejected = 0, pending = 0;
+
+            for (const key in data) {
+                const app = data[key];
+                total++;
+                if (app.status === "Approved") approved++;
+                else if (app.status === "Rejected") rejected++;
+                else pending++;
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${app.name || "N/A"}</td>
+                    <td>${app.school || "N/A"}</td>
+                    <td>${app.phone || "N/A"}</td>
+                    <td>${app.email || "N/A"}</td>
+                    <td>${app.vehicle || "N/A"}</td>
+                    <td><span class="status-badge status-${app.status.toLowerCase()}">${app.status}</span></td>
+                    <td>
+                        <button class="action-button">↓</button>
+                        ${app.status === "Pending" ? `
+                            <button class="action-button action-approve">✓</button>
+                            <button class="action-button action-reject">✕</button>` : ""}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            document.querySelectorAll(".stat-card")[0].querySelector(".stat-value").textContent = total;
+            document.querySelectorAll(".stat-card")[1].querySelector(".stat-value").textContent = approved;
+            document.querySelectorAll(".stat-card")[2].querySelector(".stat-value").textContent = rejected;
+            document.querySelectorAll(".stat-card")[3].querySelector(".stat-value").textContent = pending;
+
+            attachActionListeners(); // Attach to new rows
+        } else {
+            console.log("No applications found.");
         }
-
-        document.getElementById('totalApps').innerText = total;
-        document.getElementById('totalApproved').innerText = approved;
-        document.getElementById('totalRejected').innerText = rejected;
-      } else {
-        alert("No applications found.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching stats:", error);
-      alert("Failed to load stats.");
+    }).catch(error => {
+        console.error("Failed to fetch applications:", error);
     });
 }
 
-// --- DOM Elements ---
-const scheduleRoutesBtn = document.getElementById("scheduleRoutesBtn");
-const popupModal = document.getElementById("popupModal");
-const fileInput = document.getElementById("fileInput");
-const uploadBtn = document.getElementById("uploadBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const routeNameInput = document.getElementById("routeName");
-const scheduleDateInput = document.getElementById("scheduleDate");
-const searchBtn = document.getElementById("searchBtn");
-const searchInput = document.getElementById("searchInput");
-const searchResults = document.getElementById("searchResults");
-
-// --- Show Popup Modal ---
-scheduleRoutesBtn.addEventListener("click", () => {
-  popupModal.classList.remove("hidden");
+// Run on load
+document.addEventListener("DOMContentLoaded", () => {
+    loadApplications();
 });
-
-// --- Hide Popup Modal ---
-cancelBtn.addEventListener("click", () => {
-  popupModal.classList.add("hidden");
-  fileInput.value = "";
-  routeNameInput.value = "";
-  scheduleDateInput.value = "";
-});
-
-// --- Upload File to Firebase with Route Metadata ---
-uploadBtn.addEventListener("click", () => {
-  const file = fileInput.files[0];
-  const routeName = routeNameInput.value.trim();
-  const scheduleDate = scheduleDateInput.value.trim();
-
-  if (!file || !routeName || !scheduleDate) {
-    return alert("Please provide file, route name, and schedule date.");
-  }
-
-  const filePath = `schedules/${Date.now()}_${file.name}`;
-  const fileRef = storageRef(storage, filePath);
-
-  uploadBytes(fileRef, file)
-    .then(snapshot => getDownloadURL(snapshot.ref))
-    .then(downloadURL => {
-      const scheduleEntry = {
-        name: file.name,
-        routeName,
-        scheduleDate,
-        url: downloadURL,
-        timestamp: new Date().toISOString()
-      };
-
-      const entryRef = push(ref(database, "schedules"));
-      return set(entryRef, scheduleEntry);
-    })
-    .then(() => {
-      alert("Schedule uploaded successfully!");
-      popupModal.classList.add("hidden");
-      fileInput.value = "";
-      routeNameInput.value = "";
-      scheduleDateInput.value = "";
-    })
-    .catch(err => {
-      console.error("Upload error:", err);
-      alert("Error uploading file: " + err.message);
-    });
-});
-
-// --- Search Schedules ---
-searchBtn.addEventListener("click", () => {
-  const query = searchInput.value.trim();
-  if (!query) {
-    return alert("Please enter a route name to search.");
-  }
-  searchSchedules(query);
-});
-
-function searchSchedules(routeQuery) {
-  const schedulesRef = ref(database, "schedules");
-
-  get(schedulesRef)
-    .then(snapshot => {
-      if (snapshot.exists()) {
-        const schedules = snapshot.val();
-        const results = [];
-
-        for (const key in schedules) {
-          const entry = schedules[key];
-          if (entry.routeName.toLowerCase().includes(routeQuery.toLowerCase())) {
-            results.push(entry);
-          }
-        }
-
-        displaySearchResults(results);
-      } else {
-        alert("No schedules found.");
-      }
-    })
-    .catch(error => {
-      console.error("Search error:", error);
-      alert("Failed to search schedules.");
-    });
-}
-
-function displaySearchResults(results) {
-  searchResults.innerHTML = "";
-
-  if (results.length === 0) {
-    searchResults.innerText = "No matching schedules found.";
-    return;
-  }
-
-  results.forEach(entry => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <p><strong>Route:</strong> ${entry.routeName}</p>
-      <p><strong>Date:</strong> ${entry.scheduleDate}</p>
-      <a href="${entry.url}" target="_blank">Download Schedule</a>
-      <hr />
-    `;
-    searchResults.appendChild(div);
-  });
-}

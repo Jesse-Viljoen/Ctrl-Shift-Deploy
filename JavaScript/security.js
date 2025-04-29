@@ -12,9 +12,15 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const auth = firebase.auth();
-    const database = firebase.database();
+firebase.analytics();
+const auth = firebase.auth();
+
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
 // Load external face-api.js
 const script = document.createElement('script');

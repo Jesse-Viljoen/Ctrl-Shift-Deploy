@@ -1,4 +1,7 @@
-
+// Import the functions you need from the SDKs
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -6,19 +9,17 @@ const firebaseConfig = {
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
-  storageBucket: "ctrl-shift-deploy.firebasestorage.app",
+  storageBucket: "ctrl-shift-deploy.appspot.com",
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const auth = firebase.auth();
-    const database = firebase.database();
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
 
-    
 // Handle login form submission
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();

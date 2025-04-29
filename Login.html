@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Ride TO Class</title>
   <link rel="stylesheet" href="login.css" />
+  <script defer src="lognin.js"></script>
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js"></script>
+
 </head>
 <body>
 
@@ -21,12 +27,17 @@
     <form action="dashboard.html" method="POST">
       <input type="email" name="email" placeholder="Email address" required />
       <input type="password" name="password" placeholder="Password" required />
-      <button type="submit">Login</button>
+      <button type="submit" onclick="login()">Login</button>
     </form>
     <div class="register-link">
       Forgot password? <a href="ResetPasswordPage.html">Reset </a>
     </div>
   </div>
+  <script>function registerUser() {
+    // Redirects to the signup page
+    window.location.href = "Security.html";
+}
+</script>
 
 </body>
 </html>
