@@ -1,4 +1,3 @@
-// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -26,7 +25,48 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 const database = getDatabase(app);
 
-// Register user with validation and selfie upload
+// Setup camera
+async function setupCamera() {
+  const video = document.getElementById("video");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    return new Promise((resolve) => {
+      video.onloadedmetadata = () => resolve(video);
+    });
+  } catch (err) {
+    console.error("Camera access denied:", err);
+    alert("Camera access is required to register.");
+  }
+}
+setupCamera();
+
+// Take Selfie button logic
+const takeSelfieBtn = document.getElementById("takeSelfieBtn");
+
+takeSelfieBtn.addEventListener("click", () => {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const imageDataUrl = canvas.toDataURL("image/png");
+
+  // Preview selfie
+  const selfiePreview = document.createElement("img");
+  selfiePreview.src = imageDataUrl;
+  selfiePreview.style.maxWidth = "200px";
+  document.body.appendChild(selfiePreview);
+
+  window.capturedSelfie = imageDataUrl;
+
+  alert("Selfie taken! Now you can proceed with registration.");
+});
+
+// Register user
 window.registerUser = async function () {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -50,8 +90,14 @@ window.registerUser = async function () {
     return;
   }
 
+  const imageDataUrl = window.capturedSelfie;
+
+  if (!imageDataUrl) {
+    alert("Please take a selfie before registering.");
+    return;
+  }
+
   try {
-    // Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
@@ -66,7 +112,7 @@ window.registerUser = async function () {
       uid: user.uid
     });
 
-    // Save user to Firestore
+    // Optional: Save again with different role
     await setDoc(doc(db, "users", user.uid), {
       name,
       email,
@@ -77,15 +123,7 @@ window.registerUser = async function () {
       uid: user.uid
     });
 
-    // Upload selfie to Firebase Storage
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageDataUrl = canvas.toDataURL("image/png");
-
+    // Upload selfie
     const fileName = `${username}_selfie.png`;
     const imageRef = storageRef(storage, `user_images/${fileName}`);
     await uploadString(imageRef, imageDataUrl, 'data_url');
@@ -97,7 +135,7 @@ window.registerUser = async function () {
       selfieURL: imageURL
     });
 
-    alert("Registration successful! Redirecting to your dashboard...");
+    alert("Registration successful! Redirecting...");
     window.location.href = "resource.html";
   } catch (error) {
     console.error("Registration error:", error);
@@ -105,27 +143,14 @@ window.registerUser = async function () {
   }
 };
 
-// Navigate to login page
+// Redirect to login
 window.navigateToLogin = function () {
   window.location.href = "login.html";
 };
 
-// Setup camera feed
-async function setupCamera() {
-  const video = document.getElementById("video");
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-    return new Promise((resolve) => {
-      video.onloadedmetadata = () => resolve(video);
-    });
-  } catch (err) {
-    console.error("Camera access denied:", err);
-    alert("Camera access is required to register.");
-  }
-}
-
-// Start camera on load
-setupCamera();
 
 
+ 
+   
+
+ 
