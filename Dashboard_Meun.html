@@ -1,1 +1,158 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="CSS/Dashboard_Meun.css"/>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo-container">
+                <div class="logo">🚌</div>
+                <div class="admin-title">Admin Panel</div>
+            </div>
+            <div class="menu-item active">
+                <i>📊</i>Dashboard
+            </div>
+            <div class="menu-item">
+                <i>👨‍🎓</i>Students
+            </div>
+            <div class="menu-item">
+                <i>🚐</i>Vehicles
+            </div>
+            <div class="menu-item">
+                <i>🚪</i>Logout
+            </div>
+        </div>
+        <div class="content">
+            <div class="header">
+                <h1 class="dashboard-title">Admin Dashboard</h1>
+                <div class="welcome-message">Welcome, Admin</div>
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon document-icon">📄</div>
+                    <div class="stat-value">267</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon approved-icon">✓</div>
+                    <div class="stat-value">189</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon rejected-icon">✕</div>
+                    <div class="stat-value">43</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pending-icon">⏱</div>
+                    <div class="stat-value">35</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search students by name, school, or email...">
+                <button class="search-button">🔍</button>
+            </div>
+            <h2 class="applications-title">Student Applications</h2>
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>School</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Vehicle Type</th>
+                        <th>Application Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John Smith</td>
+                        <td>Lincoln High School</td>
+                        <td>(555) 123-4567</td>
+                        <td>john.smith@example.com</td>
+                        <td>School Bus</td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Emily Johnson</td>
+                        <td>Washington Middle School</td>
+                        <td>(555) 987-6543</td>
+                        <td>emily.j@example.com</td>
+                        <td>Minivan</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                            <button class="action-button action-approve">✓</button>
+                            <button class="action-button action-reject">✕</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Michael Brown</td>
+                        <td>Jefferson Elementary</td>
+                        <td>(555) 234-5678</td>
+                        <td>mbrown@example.com</td>
+                        <td>School Bus</td>
+                        <td><span class="status-badge status-rejected">Rejected</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sarah Wilson</td>
+                        <td>Lincoln High School</td>
+                        <td>(555) 876-5432</td>
+                        <td>sarah.w@example.com</td>
+                        <td>Minivan</td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>James Taylor</td>
+                        <td>Washington Middle School</td>
+                        <td>(555) 345-6789</td>
+                        <td>j.taylor@example.com</td>
+                        <td>School Bus</td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Emma Davis</td>
+                        <td>Jefferson Elementary</td>
+                        <td>(555) 765-4321</td>
+                        <td>emma.d@example.com</td>
+                        <td>Minivan</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>
+                            <button class="action-button">👁️</button>
+                            <button class="action-button action-approve">✓</button>
+                            <button class="action-button action-reject">✕</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <div class="pagination-item">«</div>
+                <div class="pagination-item active">1</div>
+                <div class="pagination-item">2</div>
+                <div class="pagination-item">3</div>
+                <div class="pagination-item">4</div>
+                <div class="pagination-item">5</div>
+                <div class="pagination-item">»</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
