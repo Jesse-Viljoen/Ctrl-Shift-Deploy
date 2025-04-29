@@ -1,10 +1,9 @@
-// Import Firebase and face-api
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 import { getAuth, sendEmailVerification } from "firebase/auth";
+import { getDatabase, ref as dbRef, get, child } from "firebase/database";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -12,67 +11,48 @@ const firebaseConfig = {
   storageBucket: "ctrl-shift-deploy.appspot.com",
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
-  measurementId: "G-HXZWM4BW31"
+  measurementId: "G-HXZWM4BW31",
+  databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
+const database = getDatabase(app);
 
-// Dynamically load face_main_api.js
+// Load external face-api.js
 const script = document.createElement('script');
-script.src = 'Ctrl-Shift-Deploy/JavaScript/face_main_api.js'; // The correct path
-script.type = 'text/javascript';
+script.src = 'Ctrl-Shift-Deploy/JavaScript/face_main_api.js';
 document.head.appendChild(script);
 
-// Set up verification method choice
-const verifyButton = document.getElementById('verifyBtn');
-verifyButton.addEventListener('click', async () => {
+// Email or Face Verification
+document.getElementById('verifyBtn').addEventListener('click', async () => {
   const method = document.getElementById('verificationMethod').value;
-
-  // 1. Email Verification
-  // Triggered when: if (method === 'email') { ... }
-  // Behavior:
-  // - Prompts user for email.
-  // - Verifies it against the currently logged-in Firebase user.
-  // - Sends an email verification using sendEmailVerification.
-  // ✅ This satisfies the "Email Verification" part.
   if (method === 'email') {
-    const email = prompt("Please enter your email for verification:");
-    if (!email || !email.includes('@')) {
-      alert("Invalid email.");
-      return;
-    }
-
-    const user = auth.currentUser;
-    if (user && user.email === email) {
-      sendEmailVerification(user)
-        .then(() => {
-          alert("Verification email sent. Please check your inbox.");
-        })
-        .catch((error) => {
-          console.error("Email verification error:", error);
-          alert("Error sending verification email.");
-        });
-    } else {
-      alert("User not authenticated or email mismatch.");
-    }
-
-  // 2. Face Recognition
-  // Triggered when: else if (method === 'face') { start(); }
-  // Behavior:
-  // - Loads face-api.js models.
-  // - Starts camera stream.
-  // - Captures a frame on button click (#capture).
-  // - Matches captured face against known faces from Firebase Storage.
-  // - If a match (distance < 0.6), redirects to menu.html.
+    await emailVerificationFlow();
   } else if (method === 'face') {
-    start(); // Start camera and facial recognition
+    await start();
   }
 });
 
-// Camera setup
+async function emailVerificationFlow() {
+  const email = prompt("Please enter your email:");
+  if (!email.includes('@')) return alert("Invalid email.");
+
+  const user = auth.currentUser;
+  if (!user || user.email !== email) return alert("User not authenticated or email mismatch.");
+
+  try {
+    await sendEmailVerification(user);
+    alert("Verification email sent.");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to send verification.");
+  }
+}
+
+// Set up camera and models
 async function setupCamera() {
   const video = document.getElementById('video');
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -82,7 +62,6 @@ async function setupCamera() {
   });
 }
 
-// Load face-api models
 async function loadModels() {
   await Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
@@ -97,9 +76,8 @@ async function start() {
   video.play();
 }
 
-// On capture click
-const captureBtn = document.getElementById('capture');
-captureBtn.addEventListener('click', async () => {
+// Capture and Verify Face
+document.getElementById('capture').addEventListener('click', async () => {
   const video = document.getElementById('video');
   const canvas = faceapi.createCanvasFromMedia(video);
   document.body.append(canvas);
@@ -107,44 +85,84 @@ captureBtn.addEventListener('click', async () => {
   const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
     .withFaceLandmarks().withFaceExpressions();
 
-  const width = video.videoWidth;
-  const height = video.videoHeight;
-
+  const { videoWidth: width, videoHeight: height } = video;
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
   faceapi.matchDimensions(canvas, { width, height });
 
   const resizedDetections = faceapi.resizeResults(detections, { width, height });
   faceapi.draw.drawDetections(canvas, resizedDetections);
-  faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 
   if (detections.length > 0) {
     const imageDataUrl = canvas.toDataURL();
-    verifyFace(detections, imageDataUrl);
+    await verifyFace(imageDataUrl);
   }
 });
 
-// Facial verification
-async function verifyFace(detections, capturedImageDataUrl) {
-  const userImagesRef = ref(storage, 'user_images/');
-  const result = await listAll(userImagesRef);
+// Verify face and match with email
+async function verifyFace(capturedImageDataUrl) {
+  const groups = ['parent1', 'parent2', 'student1', 'student2'];
+  const faceUrls = [];
+  const emailList = [];
 
-  const urls = await Promise.all(result.items.map(item => getDownloadURL(item)));
-
-  const descriptors = [];
-  for (const url of urls) {
-    const img = await faceapi.fetchImage(url);
-    const description = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-    if (description) descriptors.push(description.descriptor);
+  // Step 1: Collect all emails
+  for (const group of groups) {
+    const emailRef = dbRef(database, `email/${group}/users`);
+    const emailSnap = await get(emailRef);
+    if (emailSnap.exists()) {
+      Object.values(emailSnap.val()).forEach(entry => {
+        if (entry.email) emailList.push(entry.email);
+      });
+    }
   }
 
+  // Step 2: Match current user’s email
+  const currentUser = auth.currentUser;
+  if (!currentUser || !currentUser.email) {
+    alert("You must be logged in.");
+    return;
+  }
+
+  if (!emailList.includes(currentUser.email)) {
+    alert("Your email is not registered.");
+    return;
+  }
+
+  // Step 3: Fetch all facial image URLs
+  for (const group of groups) {
+    const faceRef = ref(storage, `faceImageUrl/securityVerification/${group}/users`);
+    try {
+      const list = await listAll(faceRef);
+      const urls = await Promise.all(list.items.map(item => getDownloadURL(item)));
+      faceUrls.push(...urls);
+    } catch (err) {
+      console.warn(`No images found for ${group}:`, err.message);
+    }
+  }
+
+  // Step 4: Generate descriptors
+  const labeledDescriptors = [];
+  for (const url of faceUrls) {
+    const img = await faceapi.fetchImage(url);
+    const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+    if (detection) labeledDescriptors.push(detection.descriptor);
+  }
+
+  // Step 5: Match captured face
   const capturedImage = await faceapi.fetchImage(capturedImageDataUrl);
-  const capturedDescriptor = await faceapi.detectSingleFace(capturedImage).withFaceLandmarks().withFaceDescriptor();
+  const capturedDesc = await faceapi.detectSingleFace(capturedImage).withFaceLandmarks().withFaceDescriptor();
 
-  const distances = descriptors.map(d => faceapi.euclideanDistance(capturedDescriptor.descriptor, d));
+  if (!capturedDesc) {
+    alert("Unable to process your face.");
+    return;
+  }
 
-  if (distances.some(d => d < 0.6)) {
+  const distances = labeledDescriptors.map(d => faceapi.euclideanDistance(capturedDesc.descriptor, d));
+  const isMatched = distances.some(d => d < 0.6);
+
+  if (isMatched) {
+    alert("Face recognized!");
     window.location.href = 'User_Dashboard.html';
   } else {
-    alert("No match found.");
+    alert("No matching face found.");
   }
 }
