@@ -1,7 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getDatabase, ref, set, get, push } from "firebase/database";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Firebase config
 const firebaseConfig = {
@@ -15,11 +11,11 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-// Init Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const database = getDatabase();
-const storage = getStorage(app);
+// Firebase database initialization
+firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const auth = firebase.auth();
+    const database = firebase.database();
 
 // Submit application
 function submitApplication() {

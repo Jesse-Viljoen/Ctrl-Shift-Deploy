@@ -1,6 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set } from "firebase/database";
-import { getAnalytics } from "firebase/analytics";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
@@ -13,9 +11,11 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const analytics = getAnalytics(app);
+firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const auth = firebase.auth();
+    const database = firebase.database();
+
 
 document.getElementById("driverForm").addEventListener("submit", function (e) {
   e.preventDefault();

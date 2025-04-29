@@ -1,9 +1,4 @@
-// Import the functions you need from the SDKs you need
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-        import { getAnalytics } from "firebase/analytics";
-
-        // Your web app's Firebase configuration
+// Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
             authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -15,9 +10,11 @@
             measurementId: "G-HXZWM4BW31"
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+         // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const analytics = firebase.analytics();
+  const auth = firebase.auth();
+  const database = firebase.database();
 
         async function loadUserProfile() {
             const db = getDatabase();

@@ -1,6 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get, remove } from "firebase/database";
-import { getAuth, onAuthStateChanged, deleteUser } from "firebase/auth";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
@@ -13,9 +11,13 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const auth = getAuth(app);
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const auth = firebase.auth();
+    const database = firebase.database();
+
 
 // Detect current user
 onAuthStateChanged(auth, (user) => {

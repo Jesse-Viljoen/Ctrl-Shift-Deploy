@@ -6,6 +6,7 @@
   <title>Sign Up</title>
   <link rel="stylesheet" href="RegistrationPage.css">
   <link rel="stylesheet" href="navigations.css"> <!-- Link the smooth transition CSS -->
+  <script src="Sign_up.js " ></script> <!-- Include jQuery for smooth transitions -->
 </head>
 <body>
   <div class="signup-page">
@@ -51,8 +52,15 @@
           </div>
         </div>
         <div class="button-group">
-          <button type="button" class="register-btn" onclick="registerUser()">Sign Up</button>
+          <button type="button" class="register-btn" onclick="registerUser()">Register</button>
           <button type="button" class="login-btn" onclick="navigateToLogin()">Login</button>
+          <script >function registerUser(){
+            window.location.href = 'register form.html'; 
+          }
+          function navigateToLogin(){
+            window.location.href = 'Login.html'; 
+          }
+          </script>
         </div>
       </form>
     </div>
