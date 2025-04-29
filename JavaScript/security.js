@@ -100,7 +100,7 @@ document.getElementById('capture').addEventListener('click', async () => {
 
 // Verify face and match with email
 async function verifyFace(capturedImageDataUrl) {
-  const groups = ['parent1', 'parent2', 'student1', 'student2'];
+  const groups = ['parent1', 'parent2', 'student1', 'student2']; // here is where the array match would try to match with faceUrl / faceImageUrl variable with the email
   const faceUrls = [];
   const emailList = [];
 
