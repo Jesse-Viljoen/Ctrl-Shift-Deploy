@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getDatabase, ref, set, get, push } from "firebase/database";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Firebase config
 const firebaseConfig = {
@@ -8,7 +9,7 @@ const firebaseConfig = {
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ctrl-shift-deploy",
-  storageBucket: "ctrl-shift-deploy.appspot.com", // ✅ fixed typo
+  storageBucket: "ctrl-shift-deploy.appspot.com",
   messagingSenderId: "1008311150868",
   appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
   measurementId: "G-HXZWM4BW31"
@@ -17,7 +18,8 @@ const firebaseConfig = {
 // Init Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const database = getDatabase(); // ✅ now declared
+const database = getDatabase();
+const storage = getStorage(app);
 
 // Submit application
 function submitApplication() {
@@ -84,12 +86,18 @@ function fetchApplicationStats() {
       alert("Failed to load stats.");
     });
 }
+
 // --- DOM Elements ---
 const scheduleRoutesBtn = document.getElementById("scheduleRoutesBtn");
 const popupModal = document.getElementById("popupModal");
 const fileInput = document.getElementById("fileInput");
 const uploadBtn = document.getElementById("uploadBtn");
 const cancelBtn = document.getElementById("cancelBtn");
+const routeNameInput = document.getElementById("routeName");
+const scheduleDateInput = document.getElementById("scheduleDate");
+const searchBtn = document.getElementById("searchBtn");
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
 
 // --- Show Popup Modal ---
 scheduleRoutesBtn.addEventListener("click", () => {
@@ -100,12 +108,19 @@ scheduleRoutesBtn.addEventListener("click", () => {
 cancelBtn.addEventListener("click", () => {
   popupModal.classList.add("hidden");
   fileInput.value = "";
+  routeNameInput.value = "";
+  scheduleDateInput.value = "";
 });
 
-// --- Upload File to Firebase ---
+// --- Upload File to Firebase with Route Metadata ---
 uploadBtn.addEventListener("click", () => {
   const file = fileInput.files[0];
-  if (!file) return alert("Please select a file first!");
+  const routeName = routeNameInput.value.trim();
+  const scheduleDate = scheduleDateInput.value.trim();
+
+  if (!file || !routeName || !scheduleDate) {
+    return alert("Please provide file, route name, and schedule date.");
+  }
 
   const filePath = `schedules/${Date.now()}_${file.name}`;
   const fileRef = storageRef(storage, filePath);
@@ -115,19 +130,80 @@ uploadBtn.addEventListener("click", () => {
     .then(downloadURL => {
       const scheduleEntry = {
         name: file.name,
+        routeName,
+        scheduleDate,
         url: downloadURL,
         timestamp: new Date().toISOString()
       };
 
-      const entryRef = push(dbRef(database, "schedules"));
+      const entryRef = push(ref(database, "schedules"));
       return set(entryRef, scheduleEntry);
     })
     .then(() => {
-      alert("File uploaded and saved to schedule!");
+      alert("Schedule uploaded successfully!");
       popupModal.classList.add("hidden");
       fileInput.value = "";
+      routeNameInput.value = "";
+      scheduleDateInput.value = "";
     })
     .catch(err => {
+      console.error("Upload error:", err);
       alert("Error uploading file: " + err.message);
     });
 });
+
+// --- Search Schedules ---
+searchBtn.addEventListener("click", () => {
+  const query = searchInput.value.trim();
+  if (!query) {
+    return alert("Please enter a route name to search.");
+  }
+  searchSchedules(query);
+});
+
+function searchSchedules(routeQuery) {
+  const schedulesRef = ref(database, "schedules");
+
+  get(schedulesRef)
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        const schedules = snapshot.val();
+        const results = [];
+
+        for (const key in schedules) {
+          const entry = schedules[key];
+          if (entry.routeName.toLowerCase().includes(routeQuery.toLowerCase())) {
+            results.push(entry);
+          }
+        }
+
+        displaySearchResults(results);
+      } else {
+        alert("No schedules found.");
+      }
+    })
+    .catch(error => {
+      console.error("Search error:", error);
+      alert("Failed to search schedules.");
+    });
+}
+
+function displaySearchResults(results) {
+  searchResults.innerHTML = "";
+
+  if (results.length === 0) {
+    searchResults.innerText = "No matching schedules found.";
+    return;
+  }
+
+  results.forEach(entry => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <p><strong>Route:</strong> ${entry.routeName}</p>
+      <p><strong>Date:</strong> ${entry.scheduleDate}</p>
+      <a href="${entry.url}" target="_blank">Download Schedule</a>
+      <hr />
+    `;
+    searchResults.appendChild(div);
+  });
+}
