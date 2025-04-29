@@ -1,8 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
-import { getAuth, sendEmailVerification } from "firebase/auth";
-import { getDatabase, ref as dbRef, get, child } from "firebase/database";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
@@ -15,10 +11,14 @@ const firebaseConfig = {
   databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+const auth = firebase.auth();
+
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const storage = getStorage(app);
-const auth = getAuth(app);
 const database = getDatabase(app);
 
 // Load external face-api.js
