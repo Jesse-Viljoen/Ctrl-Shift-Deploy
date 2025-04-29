@@ -1,9 +1,4 @@
-// Import the functions you need from the SDKs
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-// Firebase config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -16,33 +11,32 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 const auth = firebase.auth();
-const analytics = firebase.analytics();
 
-// Login event listener
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("loginForm");
+// Handle login form submission
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-
-      if (!userCredential.user.emailVerified) {
-        alert("Please verify your email before logging in.");
-        return;
-      }
-
-      alert("Login successful!");
-      window.location.href = "dashboard.html";
-    } catch (error) {
-      alert("Login failed: " + error.message);
+    if (!userCredential.user.emailVerified) {
+      alert("Please verify your email before logging in.");
+      return;
     }
-  });
+
+    alert("Login successful!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  }
 });
+
+
+
 
