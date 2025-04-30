@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="RegistrationPage.css">
   <link rel="stylesheet" href="navigations.css"> <!-- Link the smooth transition CSS -->
   <script src="Sign_up.js " ></script> <!-- Include jQuery for smooth transitions -->
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+
+<!-- Your custom JS (after Firebase is loaded) -->
+<script src="register.js" defer></script>
+
 </head>
 <body>
   <div class="signup-page">
@@ -54,7 +63,7 @@
         <div class="button-group">
           <button type="button" class="register-btn" onclick="registerUser()">Register</button>
           <button type="button" class="login-btn" onclick="navigateToLogin()">Login</button>
-<<<<<<< HEAD
+
           <script >function registerUser(){
             window.location.href = 'register form.html'; 
           }
@@ -62,9 +71,9 @@
             window.location.href = 'Login.html'; 
           }
           </script>
-=======
+
           </div>
->>>>>>> 854e1a2373057b1a453b2365e53061ac3ce774ee
+
         </div>
     </form>
     </div>
