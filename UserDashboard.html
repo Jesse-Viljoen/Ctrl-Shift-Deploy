@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ride To Class - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CSS/user_dashboard.css"/>
+</head>
+<body>
+<div class="dashboard">
+  <div class="sidebar">
+    <h2>Ride To Class</h2>
+    <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+    <button class="nav-btn" data-section="registration">Transport Application</button>
+    <button class="nav-btn" data-section="tracking">Tracking Status</button>
+    <button class="nav-btn" data-section="ride">Ride Information</button>
+    <button class="nav-btn" data-section="account">Account Management</button>
+    <button class="logout-btn" id="logoutBtn">Log Out</button>
+  </div>
+
+  <div class="main-content">
+    <div id="content-section"></div>
+  </div>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.nav-btn');
+  const content = document.getElementById('content-section');
+
+  const sections = {
+    dashboard: `
+  
+
+      <div class="welcome-section">
+        <div class="welcome-text">
+          <h1 class="welcome-title" id="welcomeMessage">Welcome  👋🏼!</h1>
+          <p class="welcome-subtitle">Let's get you to class on time.</p>
+        </div>
+
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search...">
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">🚌</div>
+          <div class="stat-title">Total Rides</div>
+          <div class="stat-value">24</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-title">Scheduled Rides</div>
+          <div class="stat-value">3</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-title">Rating</div>
+          <div class="stat-value">4.8</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Your Route</h2>
+      <div class="route-info">
+        <div class="location-details">
+          <div class="location-card">
+            <h3>Pick-Up Location</h3>
+            <p>47 Protea Str, Sarepttah</p>
+          </div>
+          
+          <div class="location-card">
+            <h3>Destination</h3>
+            <p>Maligawatte, Durbanville, Cape Town</p>
+          </div>
+
+          <div class="map-container">
+            <img src="images/tracking_map.png" alt="Route Map" style="width: 100%; border-radius: 12px; object-fit: cover;"/>
+          </div>
+      </div>
+    </div>
+
+      
+    `,
+    registration: `
+      <div class="auth-container">
+      <h2>Transport Application</h2>
+      <form>
+        <div class="form-group">
+          <div class="field">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required />
+          </div>
+          <div class="field">
+            <label for="role">Role *</label>
+            <select id="role" required>
+              <option value="">Select role</option>
+              <option value="parent">Parent</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="contact">Contact Number *</label>
+            <input type="tel" id="contact" placeholder="Enter contact number" required />
+          </div>
+          <div class="field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="address">Home Address / Pickup Location *</label>
+            <input type="text" id="address" placeholder="Enter your address" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="dropoff">Drop-off Location *</label>
+            <input type="text" id="dropoff" placeholder="Enter drop-off location" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
+            <label for="pickupTime">Pickup Time *</label>
+            <input type="time" id="pickupTime" required />
+          </div>
+          <div class="field">
+            <label for="returnTime">Return Time *</label>
+            <input type="time" id="returnTime" required />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Application</button>
+      </form>
+    </div>
+    `,
+    tracking: `
+      <h3>Tracking Status</h3>
+      <div class="info-grid">
+        <div class="label">Status:</div><div class="value">Approved</div>
+        <div class="label">Current Location:</div><div class="value">On Route to School</div>
+        <div class="label">Estimated Arrival:</div><div class="value">07h35</div>
+        <div class="label">Driver Name:</div><div class="value">Nethan Red</div>
+
+        <div id="invoiceSection" class="invoice" style="display: none;">
+          <h3>Ride Invoice</h3>
+          <p><strong>Amount:</strong> R45.00</p>
+          <p><strong>Date:</strong> 29 April 2025</p>
+          <p><strong>Payment Status:</strong> Paid</p>
+        </div>
+      </div>
+    `,
+    ride: `
+      <h3>Ride Information</h3>
+      <div class="ride-info-container">
+        <div class="profile">
+          <img src="images/driver.jfif" alt="Driver Photo" />
+          <div class="driver-info">
+            <div class="info-box"><strong>Driver Name:</strong> Nathan Red</div>
+            <div class="info-box"><strong>Rating:</strong> 3.5 ⭐</div>
+            <div class="info-box"><strong>Phone:</strong> 012 345 6789</div>
+            <div class="info-box"><strong>WhatsApp Chat:</strong> 
+            <a href="https://chat.whatsapp.com/AbCD" target="_blank">Click Here</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="label">Ride ID:</div><div class="value">RT123456</div>
+        <div class="label">Vehicle:</div><div class="value">Toyota Quantum</div>
+        <div class="label">Color:</div><div class="value">White</div>
+        <div class="label">Seats Booked:</div><div class="value">1</div>
+        <div class="label">Ride Days:</div><div class="value">Mon - Fri</div>
+      </div>
+    `,
+    account: `
+      <h3>Account Management</h3>
+      <div class="profile-container">
+        <div class="image-wrapper">
+          <img src="images/Profile.jpg" alt="Profile Picture" class="profile-img" />
+        </div>
+        
+        <div class="username">@Hendrick23</div>
+      </div>
+
+          <div class="info-grid">
+            <div class="label">Name:</div><div class="value" id="profileName">Loading...</div>
+            <div class="label">Email:</div><div class="value" id="profileEmail">Loading...</div>
+            <div class="label">Phone:</div><div class="value" id="profilePhone">Loading...</div>
+         
+            <button class="edit-btn" onclick="openModal('editModal')">Edit Profile</button>
+            <button class="delete-btn" onclick="openModal('deleteModal')">Delete Account</button>
+
+            <div id="editModal" class="modal">
+              <div class="modal-content">
+                <span class="close" onclick="closeModal('editModal')">&times;</span>
+                <h3>Edit Profile</h3>
+                <label>Full Name:</label>
+                <input type="text" placeholder="New Full Name" />
+                <label>Username:</label>
+                <input type="text" placeholder="New Username" />
+                <label>Email:</label>
+                <input type="email" placeholder="New Email" />
+                <label>Phone:</label>
+                <input type="tel" placeholder="New Phone Number" />
+                <label>Address:</label>
+                <input type="text" placeholder="New Address" />
+
+                <button class="small-btn">Save Changes</button>
+              </div>
+            </div>
+
+            <div id="deleteModal" class="modal">
+              <div class="modal-content">
+                <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+                <h3>Are you sure you want to delete your account?</h3>
+                
+                <div style="display: flex; gap: 10px;">
+                <button class="small-btn danger">Yes</button>
+                <button class="small-btn" onclick="closeModal('deleteModal')">Cancel</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+    `
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const section = btn.getAttribute('data-section');
+      content.innerHTML = sections[section];
+    });
+  });
+
+  // Load default section
+  content.innerHTML = sections.dashboard;
+
+  const status = document.getElementById("status").textContent.trim();
+  const invoiceSection = document.getElementById("invoiceSection");
+
+  if (status === "Approved") {
+    invoiceSection.style.display = "block";
+  } else {
+    invoiceSection.style.display = "none";
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    window.location.href = 'Login.html'; 
+  });
+
+  function openModal(id) {
+    document.getElementById(id).style.display = 'block';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+</script>
+</body>
+</html>
+
