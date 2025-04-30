@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (userCredential.user.emailVerified) {
         // Successful login
         console.log("Login successful");
-        window.location.href = "dashboard.html";
+        window.location.href = "Security.html";
       } else {
         // Email not verified
         alert("Please verify your email before logging in. Check your inbox for a verification email.");
