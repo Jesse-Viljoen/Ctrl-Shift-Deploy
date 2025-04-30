@@ -1,9 +1,4 @@
-// Import the functions you need from the SDKs
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-// Your web app's Firebase configuration
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -16,32 +11,34 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+const auth = firebase.auth();
 
-// Handle login form submission
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    if (!userCredential.user.emailVerified) {
-      alert("Please verify your email before logging in.");
-      return;
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+
+      if (!userCredential.user.emailVerified) {
+        alert("Please verify your email before logging in.");
+        return;
+      }
+
+      alert("Login successful!");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      alert("Login failed: " + error.message);
     }
-
-    alert("Login successful!");
-    window.location.href = "dashboard.html";
-  } catch (error) {
-    alert("Login failed: " + error.message);
-  }
+  });
 });
-
 
 
 

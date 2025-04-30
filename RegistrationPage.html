@@ -5,28 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link rel="stylesheet" href="RegistrationPage.css">
-  <link rel="stylesheet" href="navigations.css"> <!-- Link the smooth transition CSS -->
-  <script src="Sign_up.js " ></script> <!-- Include jQuery for smooth transitions -->
-  <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
-
-<!-- Your custom JS (after Firebase is loaded) -->
-<script src="register.js" defer></script>
-
+  <link rel="stylesheet" href="navigations.css">
+  
+  <!-- Firebase SDKs - using compat version for easier implementation -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
 </head>
 <body>
   <div class="signup-page">
     <!-- Navbar -->
     <header class="navbar">
       <div class="logo">
-        <img src="Ride.png" alt="CPUT Resource Hub Logo" class="logo-image"> <!-- Logo as an image -->
+        <img src="Ride.png" alt="Ride Logo" class="logo-image">
       </div>
-      <a href="login.html" class="login-button navigate" data-target="login.html">Login</a> <!-- Updated with navigate class -->
+      <a href="login.html" class="login-button navigate" data-target="login.html">Login</a>
     </header>
-
+    
     <!-- Auth Container -->
     <div class="auth-container">
       <h2>Sign Up</h2>
@@ -61,39 +57,30 @@
           </div>
         </div>
         <div class="button-group">
-          <button type="button" class="register-btn" onclick="registerUser()">Register</button>
+          <button type="submit" class="register-btn">Register</button>
           <button type="button" class="login-btn" onclick="navigateToLogin()">Login</button>
-
-          <script >function registerUser(){
-            window.location.href = 'register form.html'; 
-          }
-          function navigateToLogin(){
-            window.location.href = 'Login.html'; 
-          }
-          </script>
-
-          </div>
-
         </div>
-    </form>
+      </form>
     </div>
-    <script>function registerUser() {
-      // Redirects to the signup page
-      window.location.href = "register form.html";
-  }
-  
-  function navigateToLogin() {
-      // Redirects to the login page
-      window.location.href = "login.html";
-  }</script>
+    
     <!-- Footer -->
     <footer>
       <p>&copy; 2025 Ride TO Class Project. All rights reserved.</p>
     </footer>
   </div>
 
+  <!-- Include password utilities script -->
+  <script src="Sign_up.js"></script>
+  
+  <!-- Firebase initialization and user registration logic -->
   <script src="firebase.js"></script>
-  <script type="module" src="register.js"></script>
+  <script src="register.js"></script>
 
+  <!-- Navigation utilities -->
+  <script>
+    function navigateToLogin() {
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
