@@ -1,5 +1,3 @@
-
-
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
@@ -12,44 +10,48 @@ const firebaseConfig = {
   measurementId: "G-HXZWM4BW31"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
+// Initialize Firebase with compat version
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const analytics = firebase.analytics();
 
-// Notification helper
+// Notification helper function
 function showNotification(message, isError = false) {
   const notification = document.getElementById("notification");
   notification.textContent = message;
-  notification.className = isError ? "error" : "success";
+  notification.className = isError ? "notification error" : "notification success";
   notification.style.display = "block";
-
+  
   setTimeout(() => {
     notification.style.display = "none";
   }, 5000);
 }
 
 // Handle password reset
-document.getElementById("resetPasswordForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const resetButton = document.getElementById("resetButton");
-
-  if (!email || !email.includes('@')) {
-    showNotification("Please enter a valid email address.", true);
-    return;
-  }
-
-  resetButton.disabled = true;
-
-  try {
-    await sendPasswordResetEmail(auth, email);
-    showNotification("Password reset email sent! Please check your inbox.");
-  } catch (error) {
-    console.error("Password reset error:", error);
-    showNotification("Error: " + error.message, true);
-  } finally {
-    resetButton.disabled = false;
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  const resetForm = document.getElementById("resetPasswordForm");
+  
+  resetForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    
+    const email = document.getElementById("email").value.trim();
+    const resetButton = document.getElementById("resetButton");
+    
+    if (!email || !email.includes('@')) {
+      showNotification("Please enter a valid email address.", true);
+      return;
+    }
+    
+    resetButton.disabled = true;
+    
+    try {
+      await auth.sendPasswordResetEmail(email);
+      showNotification("Password reset email sent! Please check your inbox.");
+    } catch (error) {
+      console.error("Password reset error:", error);
+      showNotification("Error: " + error.message, true);
+    } finally {
+      resetButton.disabled = false;
+    }
+  });
 });

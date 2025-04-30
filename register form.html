@@ -7,15 +7,18 @@
   <link rel="stylesheet" href="RegistrationPage.css" />
   <link rel="stylesheet" href="navigations.css" />
 
-  <script src="firebase.js"></script>
+  <!-- Firebase SDKs - Using modular v9 version since your JS uses this -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
+  
+  <!-- Your custom JavaScript - loaded after Firebase -->
   <script type="module" src="RegistrationPage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
 
-<script type="module" src="register.js"></script>
   <style>
+    /* Your existing styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -36,7 +39,6 @@
       flex-direction: column;
     }
     
-
     header.navbar {
       display: flex;
       justify-content: space-between;
@@ -138,6 +140,27 @@
         flex: 1 1 100%;
       }
     }
+
+    /* Status message styles */
+    .status-message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 
@@ -154,7 +177,7 @@
     <!-- Registration Form Container -->
     <div class="auth-container">
       <h2>Transport Registration</h2>
-      <form>
+      <form id="transportRegistrationForm">
         <div class="form-group">
           <div class="field">
             <label for="fullName">Full Name *</label>
@@ -183,6 +206,17 @@
 
         <div class="form-group">
           <div class="field">
+            <label for="password">Password *</label>
+            <input type="password" id="password" placeholder="Create a password" required />
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field">
             <label for="address">Home Address / Pickup Location *</label>
             <input type="text" id="address" placeholder="Enter your address" required />
           </div>
@@ -206,6 +240,8 @@
           </div>
         </div>
 
+        <div id="statusMessage" class="status-message"></div>
+
         <button type="submit" class="submit-button">Submit Registration</button>
       </form>
     </div>
@@ -215,8 +251,5 @@
       <p>&copy; 2025 Ride TO Class Project. All rights reserved.</p>
     </footer>
   </div>
-
- 
-
 </body>
 </html>

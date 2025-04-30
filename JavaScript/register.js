@@ -2,10 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { getDatabase, ref as dbRef, set as dbSet } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-// Firebase config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
   authDomain: "ctrl-shift-deploy.firebaseapp.com",
@@ -22,133 +21,151 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 const database = getDatabase(app);
 
-// Setup camera
-async function setupCamera() {
-  const video = document.getElementById("video");
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-    return new Promise((resolve) => {
-      video.onloadedmetadata = () => resolve(video);
-    });
-  } catch (err) {
-    console.error("Camera access denied:", err);
-    alert("Camera access is required to register.");
+// Show status message
+function showStatus(message, isError = false) {
+  const statusElement = document.getElementById('statusMessage');
+  if (statusElement) {
+    statusElement.textContent = message;
+    statusElement.className = `status-message ${isError ? 'error' : 'success'}`;
+    statusElement.style.display = 'block';
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      statusElement.style.display = 'none';
+    }, 5000);
+  } else {
+    alert(message);
   }
 }
-setupCamera();
 
-// Take Selfie button logic
-const takeSelfieBtn = document.getElementById("takeSelfieBtn");
+// Form validation
+function validateForm(data) {
+  // Basic validation
+  for (const key in data) {
+    if (data[key] === '' && key !== 'username') {
+      showStatus(`Please fill in the ${key} field`, true);
+      return false;
+    }
+  }
 
-takeSelfieBtn.addEventListener("click", () => {
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  const context = canvas.getContext("2d");
+  // Password validation
+  if (data.password !== data.confirmPassword) {
+    showStatus('Passwords do not match', true);
+    return false;
+  }
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  if (data.password.length < 8) {
+    showStatus('Password must be at least 8 characters long', true);
+    return false;
+  }
 
-  const imageDataUrl = canvas.toDataURL("image/png");
+  if (!/[A-Z]/.test(data.password) || !/[0-9]/.test(data.password)) {
+    showStatus('Password must include at least one uppercase letter and one number', true);
+    return false;
+  }
 
-  // Preview selfie
-  const selfiePreview = document.createElement("img");
-  selfiePreview.src = imageDataUrl;
-  selfiePreview.style.maxWidth = "200px";
-  document.body.appendChild(selfiePreview);
+  return true;
+}
 
-  window.capturedSelfie = imageDataUrl;
-
-  alert("Selfie taken! Now you can proceed with registration.");
+// Handle form submission
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('transportRegistrationForm');
+  
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = {
+        fullName: document.getElementById('fullName').value.trim(),
+        role: document.getElementById('role').value,
+        contact: document.getElementById('contact').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirmPassword').value,
+        address: document.getElementById('address').value.trim(),
+        dropoff: document.getElementById('dropoff').value.trim(),
+        pickupTime: document.getElementById('pickupTime').value,
+        returnTime: document.getElementById('returnTime').value
+      };
+      
+      // Validate form
+      if (!validateForm(formData)) {
+        return;
+      }
+      
+      // Disable submit button to prevent multiple submissions
+      const submitButton = form.querySelector('.submit-button');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Registering...';
+      
+      try {
+        // Create user account with Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const user = userCredential.user;
+        
+        // Generate username from email if not provided
+        const username = formData.email.split('@')[0];
+        
+        // Save user profile to Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          fullName: formData.fullName,
+          email: formData.email,
+          contact: formData.contact,
+          role: formData.role,
+          createdAt: new Date(),
+          uid: user.uid
+        });
+        
+        // Save transport information to Realtime Database
+        await dbSet(dbRef(database, `transports/${user.uid}`), {
+          fullName: formData.fullName,
+          email: formData.email,
+          contact: formData.contact,
+          role: formData.role,
+          address: formData.address,
+          dropoff: formData.dropoff,
+          pickupTime: formData.pickupTime,
+          returnTime: formData.returnTime,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+        
+        // Show success message
+        showStatus('Registration successful! You will be redirected shortly.');
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Registration error:', error);
+        
+        // Show appropriate error message
+        let errorMessage = 'Registration failed. Please try again.';
+        
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'This email is already registered. Please use a different email or login.';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Please enter a valid email address.';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'Password is too weak. Please choose a stronger password.';
+        }
+        
+        showStatus(errorMessage, true);
+      } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Registration';
+      }
+    });
+  } else {
+    console.error('Transport registration form not found');
+  }
 });
-
-// Register user
-window.registerUser = async function () {
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone")?.value.trim() || "";
-  const username = document.getElementById("username")?.value.trim() || "";
-  const password = document.getElementById("password").value.trim();
-  const repassword = document.getElementById("repassword").value.trim();
-
-  if (!name || !email || !password || !repassword || !username) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  if (password !== repassword) {
-    alert("Passwords do not match!");
-    return;
-  }
-
-  if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-    alert("Password must be at least 8 characters long, include a number and an uppercase letter.");
-    return;
-  }
-
-  const imageDataUrl = window.capturedSelfie;
-
-  if (!imageDataUrl) {
-    alert("Please take a selfie before registering.");
-    return;
-  }
-
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Save user to Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      name,
-      email,
-      phone,
-      username,
-      role: "student",
-      createdAt: new Date(),
-      uid: user.uid
-    });
-
-    // Optional: Save again with different role
-    await setDoc(doc(db, "users", user.uid), {
-      name,
-      email,
-      phone,
-      username,
-      role: "parent",
-      createdAt: new Date(),
-      uid: user.uid
-    });
-
-    // Upload selfie
-    const fileName = `${username}_selfie.png`;
-    const imageRef = storageRef(storage, `user_images/${fileName}`);
-    await uploadString(imageRef, imageDataUrl, 'data_url');
-    const imageURL = await getDownloadURL(imageRef);
-
-    // Save selfie URL in Realtime DB
-    await dbSet(dbRef(database, `users/${username}`), {
-      username,
-      selfieURL: imageURL
-    });
-
-    alert("Registration successful! Redirecting...");
-    window.location.href = "resource.html";
-  } catch (error) {
-    console.error("Registration error:", error);
-    alert("Error: " + error.message);
-  }
-};
-
-// Redirect to login
-window.navigateToLogin = function () {
-  window.location.href = "login.html";
-};
-
-
 
  
    
