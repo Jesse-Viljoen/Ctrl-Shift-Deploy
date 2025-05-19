@@ -4,15 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Ride TO Class</title>
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" />
+
+<style>
+/* Background Image */
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("images/register.png");
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+  }
   
-  <!-- Firebase SDKs - Using compat version for consistency with your JS code -->
+  /* Dark overlay to enhance contrast */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 30, 30, 0.6);
+    z-index: -1;
+  }
+  
+  /* Centered login form */
+  .login-container {
+    position: relative;
+    max-width: 350px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .login-container h2 {
+    font-size: 1.8em;
+    margin-bottom: 5px;
+    color: #1c1c1c;
+  }
+  
+  .login-container p {
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .login-container input[type="email"],
+  .login-container input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 1em;
+  }
+  
+  .login-container button {
+    width: 90%;
+    padding: 10px;
+    border: none;
+    background-color: #20b2aa;
+    color: white;
+    font-size: 1.1em;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-container button:hover {
+    background-color: #e4572e;
+  }
+  
+  .register-link {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #444;
+  }
+  
+  .register-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+  
+</style>
+
+<!-- Firebase SDKs - Using compat version for consistency with your JS code -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
   
-  <!-- Your JavaScript - loaded after Firebase -->
-  <script defer src="login.js"></script>
+  
 </head>
 <body>
   <div class="background-image"></div>
@@ -35,4 +125,100 @@
     </div>
   </div>
 </body>
+<!-- Your JavaScript - loaded after Firebase -->
+  <script>         
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDoDiJ9-UzKfuwBLS3f4N-4V96vgE2hNEY",
+  authDomain: "ctrl-shift-deploy.firebaseapp.com",
+  databaseURL: "https://ctrl-shift-deploy-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "ctrl-shift-deploy",
+  storageBucket: "ctrl-shift-deploy.appspot.com",
+  messagingSenderId: "1008311150868",
+  appId: "1:1008311150868:web:5d8db4655fbe8de360ba01",
+  measurementId: "G-HXZWM4BW31"
+};
+
+// Initialize Firebase (check if already initialized to avoid errors)
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const analytics = firebase.analytics();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  
+  if (!form) {
+    console.error("Login form not found");
+    return;
+  }
+
+  // Add loading state management
+  function setLoading(isLoading) {
+    const loginButton = form.querySelector('button[type="submit"]');
+    if (loginButton) {
+      loginButton.disabled = isLoading;
+      loginButton.textContent = isLoading ? "Logging in..." : "Login";
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    
+    if (!email || !password){
+      alert("Please enter both email and password");
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      
+      // Check if email is verified (if you're using email verification)
+      if (userCredential.user.emailVerified) {
+        // Successful login
+        console.log("Login successful");
+        window.location.href = "Security.html";
+      } else {
+        // Email not verified
+        alert("Please verify your email before logging in. Check your inbox for a verification email.");
+        
+        // Option to resend verification email
+        await userCredential.user.sendEmailVerification();
+        alert("A new verification email has been sent to your email address.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      
+      // Handle specific error codes
+      switch(error.code) {
+        case 'auth/user-not-found':
+          alert("No account found with this email address.");
+          break;
+        case 'auth/wrong-password':
+          alert("Incorrect password. Please try again.");
+          break;
+        case 'auth/too-many-requests':
+          alert("Too many unsuccessful login attempts. Please try again later or reset your password.");
+          break;
+        default:
+          alert("Login failed: " + error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  });
+  
+  // Debug check to verify Firebase is loaded correctly
+  console.log("Firebase Auth initialized:", !!auth);
+});
+
+
+  </script>
 </html>

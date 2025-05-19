@@ -106,7 +106,7 @@ updateSubscriptionBtn.addEventListener("click", () => {
 });
 
 // Delete subscription
-deleteSubscriptionBtn.addEventListener("click", () => {
+deleteSubscriptionBtn.addEventListener("click", () =>{
   if (confirm("Are you sure you want to delete your subscription?")) {
     remove(ref(db, `users/${currentUID}/subscription`))
       .then(() => alert("Subscription deleted."))
@@ -115,7 +115,7 @@ deleteSubscriptionBtn.addEventListener("click", () => {
 });
 
 // Delete account
-deleteAccountBtn.addEventListener("click", () => {
+deleteAccountBtn.addEventListener("click", () =>{
   if (confirm("This will delete your account permanently. Continue?")) {
     remove(ref(db, `users/${currentUID}`)).then(() => {
       deleteUser(auth.currentUser)
